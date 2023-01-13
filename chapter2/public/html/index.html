@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>chat room</title>
+        <link rel='stylesheet' href='/css/style.css'></link>
+    </head>
+    <body>
+        <div id='content'>
+            <div id='room'></div>
+            <div id='room-list'></div>
+            <div id='messages'></div>
+
+            <form id='send-form'>
+                <input id='send-message' />
+                <input id='send-button' type='submit' value='Send' />
+
+                <div id='help'>
+                    Chat commands:
+                    <ul>
+                        <li>Change nickname: <code>/nick [username]</code></li>
+                        <li>Join/create room: <code>/join [root name]</code></li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <script src="../js/socket.io.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- 下一个使用的是 node_modules 安装的客户端文件 -->
+        <!-- <script src='/socket.io/socket.io.js' type='text/javascript'></script> -->
+        <script src="/js/jquery-1.8.0.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src='/js/chat.js' type='text/javascript'></script>
+        <script src='/js/chat_ui.js' type='text/javascript'></script>
+    </body>
+</html>
