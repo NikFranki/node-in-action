@@ -30,7 +30,7 @@ var server = http.createServer(function (req, res) {
   //   res.end('Internal Server Error');
   // });
 
-  // 使用 fs.stat() 实现先发之人的错误处理
+  // 使用 fs.stat() 实现先发制人的错误处理
   fs.stat(path, function (err, stat) {
     if (err) {
       if (err.code === 'ENOENT') {

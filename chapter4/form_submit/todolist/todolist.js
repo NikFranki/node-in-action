@@ -10,8 +10,9 @@ var url = require('url');
 var items = [];
 
 var server = http.createServer(function (req, res) {
-  if (Number.isInteger(parseInt(url.parse(req.url).pathname.replace(/([\/\?])/g, '')))) {
-    del(req, res);
+  if (req.url.indexOf('delete') > - 1) {
+    const delNum = +url.parse(req.url).search.split('=')[1];
+    del(req, res, delNum);
     return;
   }
 
@@ -49,9 +50,7 @@ function show(res) {
     '<ul>' +
     items.map(function (item, index) {
       return '<li>' + item +
-        '<form action="/' + index + '" method="delete">' +
-        '<input type="submit" value="delete" />' +
-        '</form>'
+        '<a href="/delete?del_num=' + index + '"' + '>delete' + '</a>'
         + '</li>';
     }).join('') +
     '</ul>' +
@@ -96,9 +95,7 @@ function add(req, res) {
 }
 
 // 处理删除
-function del(req, res) {
-  var query = url.parse(req.url).query;
-  var delNum = query.split('=')[1];
+function del(req, res, delNum) {
   items.splice(delNum, 1);
   show(res);
 }
