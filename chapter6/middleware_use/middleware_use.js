@@ -1,13 +1,21 @@
 var connect = require('connect');
 
-function logger(req, res, next) {
-  console.log('%s %s', req.method, req.url);
-  next(); // 总是先调用 next()，所以后续中间件都会被调用
-}
+// function logger(req, res, next) {
+//   console.log('%s %s', req.method, req.url);
+//   next(); // 总是先调用 next()，所以后续中间件都会被调用
+// }
 
-function hello(req, res) { // 不会调用 next()，因为组件响应了请求
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('hello world');
+// function hello(req, res) { // 不会调用 next()，因为组件响应了请求
+//   res.setHeader('Content-Type', 'text/plain');
+//   res.end('hello world');
+// }
+
+function hello(req, res, next) {
+  foo();
+  console.log(abc);
+  // res.setHeader('Content-Type', 'text/plain');
+  // res.end('hello world');
+  next();
 }
 
 // 中间件的顺序很重要，顺序不对的话，可能对于调用产生不可逆的影响
@@ -34,16 +42,41 @@ function restrict(req, res, next) {
   var pass = auth[1];
 
   // 模拟检查校验信息
-  setTimeout(function() {
+  setTimeout(function () {
     console.log(paths, scheme, auth, user, pass);
     next();
   }, 1000);
 }
 
+var logger = require('./middleware_logger');
+
+var router = require('./middleware_router');
+var routes = {
+  GET: {
+    '/users': function (req, res) {
+      res.end('tobi, loki, ferret');
+    },
+    '/user/:id': function (req, res, id) {
+      res.end('user: ' + id);
+    }
+  },
+  DELETE: {
+    '/user/:id': function (req, res, id) {
+      res.end('delete user ' + id);
+    }
+  }
+};
+
+var rewrite = require('./middleware_rewrite');
+var errorHandler = require('./middleware_error_handler');
+
 connect()
-  .use(logger)
-  .use(restrict)
+  .use(logger(':method :url'))
+  .use(rewrite())
+  // .use(restrict)
+  .use(router(routes))
   .use(hello)
+  .use(errorHandler())
   .listen(3000);
 
 console.log('Server is running at http://127.0.0.1:3000');
