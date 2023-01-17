@@ -1,3 +1,3 @@
 # node-in-action learning
 
-record learnning node in action.
+record learning node in action.
