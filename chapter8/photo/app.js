@@ -15,7 +15,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // 设置图片上传地址
-app.set('photosPath', __dirname + '/public/photos');
+app.set('photosPath',  path.join(__dirname, '/public/photos'));
 
 app.set('title', 'My Application');
 

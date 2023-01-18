@@ -36,7 +36,7 @@ router.get('/upload', function(req, res) {
 
 - 定义照片模型
 
-|注意：前提是需要安装好 mongodb，把相应的数据库资源准好，启动好
+| 注意：前提是需要安装好 mongodb，把相应的数据库资源准好，启动好
 
 定义如下：
 
