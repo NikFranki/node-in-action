@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "jade": "jade template/blog_page.jade"
+  },
+  "dependencies": {
+    "jade": "^1.11.0"
+  }
+}
