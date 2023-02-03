@@ -60,7 +60,6 @@ function handler(req, res) {
 
 function tick() {
   var now = new Date().toUTCString(); // 取得当前时间的 UTC 表示
-  console.log(123, now);
   io.sockets.send(now); // 将时间发送给所有连接上来的客户端
 }
 
