@@ -87,3 +87,7 @@ module.exports = mongoose.model("Photo", schema);
 ## 小结
 
 学会如何从头开始创建 Express 文件，以及处理常见的 web 开发任务，学会如何组织目录，如何使用环境变量
+
+## 具体代码细节
+
+[chapter8](https://github.com/NikFranki/node-in-action/tree/master/chapter8)

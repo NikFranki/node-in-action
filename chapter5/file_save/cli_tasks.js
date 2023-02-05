@@ -21,6 +21,7 @@ switch (common) {
     break;
 }
 
+// 从文本文件中加载用 JSON 编码的数据
 function loadOrInitializeTaskArray(file, cb) {
   fs.exists(file, function (exists) { // 检查 .tasks 文件是否存在
     var tasks = [];

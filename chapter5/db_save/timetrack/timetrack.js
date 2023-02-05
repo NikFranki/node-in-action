@@ -1,5 +1,7 @@
 // 程序功能模块
 
+
+// 辅助函数：发送 HTML，创建表单、接收表单数据
 var qs = require('querystring');
 
 // 发送 HTML 响应

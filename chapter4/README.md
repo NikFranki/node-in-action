@@ -70,3 +70,7 @@ res.statusCode = 302;
 - 计算上传进度
 
 ## 用 HTTPS 加强程序的安全性
+
+## 具体代码细节
+
+[chapter4](https://github.com/NikFranki/node-in-action/tree/master/chapter4)
