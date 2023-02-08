@@ -181,20 +181,29 @@ const Todolist = () => {
       <ul className="list-wrapper">
         {
           list.map(item => {
+            const isFinished = item.status === FILTER_DONE;
+
             return (
-              <li className={`list-item ${item.status === FILTER_DONE ? 'active' : 'normal'}`} key={item.id}>
+              <li className={`list-item ${isFinished ? 'active' : 'normal'}`} key={item.id}>
+                <input
+                  className="check"
+                  name="check"
+                  type="checkbox"
+                  checked={isFinished}
+                  onChange={(e) => {
+                    handleUpdate(item.id, item.content, isFinished ? FILTER_TODO : FILTER_DONE, item.date)
+                  }}
+                />
                 <span>{item.content}</span>
                 {' '}
                 <span>{item.date}</span>
-                {item.status === FILTER_TODO && <button onClick={() => handleUpdate(item.id, item.content, FILTER_DONE, item.date)}>DONE</button>}
-                {item.status === FILTER_DONE && <button onClick={() => handleUpdate(item.id, item.content, FILTER_TODO, item.date)}>TODO</button>}
                 <button onClick={() => handleDelete(item.id)}>DELETE</button>
               </li>
             );
           })
         }
       </ul>
-    )
+    );
   };
 
   const renderFilter = () => {

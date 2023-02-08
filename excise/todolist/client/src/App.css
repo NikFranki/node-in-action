@@ -51,6 +51,10 @@
   border-bottom: 1px solid #eee;
 }
 
+.list-wrapper .list-item .check {
+  margin-right: 10px;
+}
+
 .list-wrapper .list-item span {
   margin-right: 10px;
 }

@@ -8,6 +8,7 @@ const notfound = require('./lib/middleware/notfound');
 const error = require('./lib/middleware/error');
 
 const entriesRouter = require('./routes/entries');
+const userRouter = require('./routes/user');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use('/', entriesRouter);
+app.use('/user', userRouter);
 
 app.use(notfound);
 app.use(error);

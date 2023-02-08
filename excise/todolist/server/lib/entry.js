@@ -32,24 +32,8 @@ class Entry {
     conn.query(
       query,
       values,
-      (err, data) => {
+      (err, list) => {
         if (err) return next(err);
-  
-        let list = [];
-        switch (status) {
-          case FILTER_ALL:
-            list = data;
-            break;
-          case FILTER_TODO:
-            list = data.filter(item => item.status === FILTER_TODO);
-            break;
-          case FILTER_DONE:
-            list = data.filter(item => item.status === FILTER_DONE);
-            break;
-          default:
-            list = data;
-            break;
-        }
   
         conn.query(sqlStatus, values, (err, result) => {
           if (err) return next(err);

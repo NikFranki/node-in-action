@@ -8,7 +8,7 @@ const conn = mysql.createConnection({
   database: 'todos',
 });
 
-/* 创建数据库表 */
+/* 创建数据库表(todolist) */
 conn.query(
   'CREATE TABLE IF NOT EXISTS todolist (' +
   'id VARCHAR(40) NOT NULL, ' +
@@ -16,6 +16,13 @@ conn.query(
   'status INT(10) NOT NULL, ' +
   'date Date, ' +
   'PRIMARY KEY(id))',
+);
+
+/* 创建数据库表(user) */
+conn.query(
+  'CREATE TABLE IF NOT EXISTS user (' +
+  'username VARCHAR(60) NOT NULL, ' +
+  'password VARCHAR(100) NOT NULL)',
 );
 
 module.exports = conn;
