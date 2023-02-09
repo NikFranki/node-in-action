@@ -22,7 +22,8 @@ conn.query(
 conn.query(
   'CREATE TABLE IF NOT EXISTS user (' +
   'username VARCHAR(60) NOT NULL, ' +
-  'password VARCHAR(100) NOT NULL)',
+  'password VARCHAR(100) NOT NULL, ' +
+  'avatar VARCHAR(512))',
 );
 
 module.exports = conn;

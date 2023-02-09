@@ -1,5 +1,17 @@
 const conn = require('../services/db');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, req.app.get('imagesPath'));
+  },
+  filename: (req, file, callback) => {
+    callback(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage });
 
 class User {
   constructor(obj) {
@@ -9,6 +21,11 @@ class User {
   }
 
   async register(req, res, next) {
+    if (!req.file) {
+      return next(new Error('no file upload'));
+    }
+
+    const avatar = 'http://localhost:8000/images/' + req.file.filename;
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     conn.query(
@@ -19,8 +36,8 @@ class User {
         if (result.length !== 0) return next(new Error('user already exists'));
 
         conn.query(
-          'INSERT INTO user VALUES (?,?)',
-          [username, hashedPassword],
+          'INSERT INTO user VALUES (?,?,?)',
+          [username, hashedPassword, avatar],
           (err, result) => {
             if (err) return next(err);
 
@@ -28,7 +45,6 @@ class User {
             res.send(JSON.stringify({
               code: 200,
               message: 'success',
-              id: result.insertId,
             }));
           }
         );
@@ -58,17 +74,19 @@ class User {
           res.send(JSON.stringify({
             code: 200,
             message: `${username} is logged in!`,
-            id: result.insertId,
+            data: {
+              username: result[0].username,
+              avatar: result[0].avatar,
+            },
           }));
         } else {
           res.send(JSON.stringify({
             code: -1,
             message: 'password incorrect!',
-            id: result.insertId,
           }));
         }
       });
   }
 }
 
-module.exports = User;
+module.exports = { User, upload };

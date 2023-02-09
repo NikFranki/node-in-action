@@ -4,6 +4,18 @@
   text-align: center;
 }
 
+.header-menu-wrapper {
+  text-align: right;
+}
+
+.header-menu-wrapper .home-url {
+  margin-right: 8px;
+}
+
+.header-menu-wrapper .avater-dropdown {
+  cursor: pointer;
+}
+
 .search-wrapper {
   text-align: left;
   margin-bottom: 10px;

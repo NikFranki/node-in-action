@@ -1,4 +1,8 @@
 import React from 'react';
+import {
+  Link,
+  Outlet,
+} from "react-router-dom";
 
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
@@ -237,6 +241,10 @@ const Todolist = () => {
       {renderList()}
       {renderFilter()}
       {renderPagination()}
+      <div>
+        <Link to={`contacts/1`}>Contacts</Link>
+        <Outlet />
+      </div>
     </div>
   );
 };
