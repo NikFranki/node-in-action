@@ -5,23 +5,20 @@ import './App.css';
 
 export async function loader() {
   const user = await fetch(
-    'http://localhost:8000/user/login',
+    'http://localhost:8000/user/searchUser',
     {
       method: 'post',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: 'franki',
-        password: '123',
-      }),
-    }
+      credentials: 'include',
+    },
   ).then(res => res.json());
   return { user };
 }
 
 function App() {
+  React.useEffect(() => {
+    loader();
+  }, []);
+
   return (
     <div className="App">
       <Menu />

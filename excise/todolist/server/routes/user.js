@@ -10,4 +10,10 @@ router.post('/register', upload.single("avatar"), user.register);
 /* user login */
 router.post('/login', user.login);
 
+/* user search */
+router.post('/searchUser', user.searchUser);
+
+/* user logout */
+router.post('/logout', user.logout);
+
 module.exports = router;

@@ -17,8 +17,8 @@ const Register = () => {
       'http://localhost:8000/user/register',
       {
         method: 'post',
-        mode: 'cors',
-        body: formData
+        credentials: 'include',
+        body: formData,
       }
     ).then((res) => res.json());
     if (res.code !== 200) {

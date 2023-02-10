@@ -4,6 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const session = require('express-session');
+
 const notfound = require('./lib/middleware/notfound');
 const error = require('./lib/middleware/error');
 
@@ -14,6 +16,16 @@ const app = express();
 
 app.set('imagesPath', path.join(__dirname, '/public/images/'));
 
+app.use(session({
+  secret:"keyboard cat",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 1, // 1 小时过期
+  },
+  rolling:true,
+}));
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -23,7 +35,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 
 app.use('/', entriesRouter);
 app.use('/user', userRouter);

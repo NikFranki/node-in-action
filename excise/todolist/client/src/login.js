@@ -15,10 +15,10 @@ const Register = () => {
       'http://localhost:8000/user/login',
       {
         method: 'post',
-        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(form),
       }
     ).then((res) => res.json());

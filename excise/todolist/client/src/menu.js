@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLoaderData, useNavigate } from "react-router-dom";
 
-import { Dropdown, Space, Avatar } from 'antd';
+import { Dropdown, Space, Avatar, message } from 'antd';
 
 const Menu = () => {
   const { user } = useLoaderData();
@@ -10,16 +10,28 @@ const Menu = () => {
   const userLogined = user.code === 200;
 
   React.useEffect(() => {
-    if (!user.data?.avatar) {
+    if (!user.data?.username) {
+      message.error('you have not login, please login first.');
       navigate('/login', { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // TODO: clear login user info
-    navigate('/login', { replace: true });
+    try {
+      await fetch(
+        'http://localhost:8000/user/logout',
+        {
+          method: 'post',
+          credentials: 'include',
+        },
+      ).then((res) => res.json());
+      navigate('/login', { replace: true });
+    } catch (error) {
+      message.error(error.message);
+    }
   };
 
   const items = [

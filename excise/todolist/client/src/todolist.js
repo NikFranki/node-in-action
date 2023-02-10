@@ -30,7 +30,7 @@ const Todolist = () => {
       'http://localhost:8000/list',
       {
         method: 'post',
-        mode: 'cors',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -68,7 +68,7 @@ const Todolist = () => {
       'http://localhost:8000/update',
       {
         method: 'post',
-        mode: 'cors',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -90,7 +90,7 @@ const Todolist = () => {
       'http://localhost:8000/delete',
       {
         method: 'post',
-        mode: 'cors',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -118,7 +118,7 @@ const Todolist = () => {
       'http://localhost:8000/add',
       {
         method: 'post',
-        mode: 'cors',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },

@@ -71,13 +71,16 @@ class User {
         const hashedPassword = result[0].password;
         const isPasswordEqual = await bcrypt.compare(password, hashedPassword);
         if (isPasswordEqual) {
+          const data = {
+            username: result[0].username,
+            avatar: result[0].avatar,
+          };
+          // 记录用户登录态
+          req.session.userInfo = data;
           res.send(JSON.stringify({
             code: 200,
             message: `${username} is logged in!`,
-            data: {
-              username: result[0].username,
-              avatar: result[0].avatar,
-            },
+            data,
           }));
         } else {
           res.send(JSON.stringify({
@@ -86,6 +89,33 @@ class User {
           }));
         }
       });
+  }
+
+  logout(req, res, next) {
+    req.session.destroy((err) => {
+      if (err) return next(err);
+
+      res.send({
+        code: 200,
+        message: 'logout successfully',
+      });
+    });
+  }
+
+  searchUser(req, res, next) {
+    if (!req.session.userInfo) {
+      res.send({
+        code: -1,
+        message: 'user not login, please login first',
+      });
+      return;
+    }
+
+    res.send({
+      code: 200,
+      message: 'success',
+      data: req.session.userInfo,
+    });
   }
 }
 
