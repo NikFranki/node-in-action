@@ -21,7 +21,7 @@ const contentStyle = {
   minHeight: 120,
   lineHeight: '120px',
   color: '#fff',
-  backgroundColor: '#e1b994',
+  backgroundColor: '#f5f5d5',
 };
 const footerStyle = {
   textAlign: 'center',

@@ -4,13 +4,15 @@ import {
   Link,
 } from "react-router-dom";
 
-import { message } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input, message } from 'antd';
+
+import './index.css';
 
 const Register = () => {
-  const [form, setForm] = React.useState({ username: '', password: '' });
   const navigate = useNavigate();
 
-  const handleSumbit = async () => {
+  const onFinish = async (values) => {
     const res = await fetch(
       'http://localhost:8000/user/login',
       {
@@ -19,7 +21,7 @@ const Register = () => {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(form),
+        body: JSON.stringify(values),
       }
     ).then((res) => res.json());
     if (res.code !== 200) {
@@ -32,21 +34,42 @@ const Register = () => {
 
   return (
     <div className="login-wrapper">
-      <p>
-        <label>Username</label>
-        <input type="text" name="username" placeholder="please input your username" onChange={(e) => setForm({ ...form, username: e.target.value })} />
-      </p>
-      <p>
-        <label>Password</label>
-        <input type="password" name="password" placeholder="please input your password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
-      </p>
-      <p>
-        <button type="submit" onClick={handleSumbit}>Submit</button>
-      </p>
-      <p>
-        <span>has not an account? now carete it!</span>
-        <Link to='/register'>Register</Link>
-      </p>
+      <Form
+        name="normal_login"
+        className="login-form"
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+      >
+        <Form.Item
+          name="username"
+          rules={[{ required: true, message: 'Please input your Username!' }]}
+        >
+          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Please input your Password!' }]}
+        >
+          <Input
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            type="password"
+            placeholder="Password"
+          />
+        </Form.Item>
+        <Form.Item>
+          <Form.Item name="remember" valuePropName="checked" noStyle>
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="login-form-button">
+            Log in
+          </Button>
+          {' '}
+          Or <Link to='/register'>register now!</Link>
+        </Form.Item>
+      </Form>
     </div>
   );
 };
