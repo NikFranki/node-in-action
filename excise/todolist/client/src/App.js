@@ -1,7 +1,33 @@
 import React from 'react';
-import Menu from './menu';
-import Todolist from './todolist';
+import { Layout, Space } from 'antd';
+import dayjs from 'dayjs';
+
+import Menu from './components/menu';
+import Todolist from './home/todolist';
+
 import './App.css';
+
+const { Header, Footer, Content } = Layout;
+
+const headerStyle = {
+  color: '#fff',
+  height: 64,
+  paddingInline: 50,
+  lineHeight: '64px',
+  backgroundColor: '#7dbcea',
+};
+const contentStyle = {
+  textAlign: 'center',
+  minHeight: 120,
+  lineHeight: '120px',
+  color: '#fff',
+  backgroundColor: '#e1b994',
+};
+const footerStyle = {
+  textAlign: 'center',
+  color: '#fff',
+  backgroundColor: '#7dbcea',
+};
 
 export async function loader() {
   const user = await fetch(
@@ -21,8 +47,18 @@ function App() {
 
   return (
     <div className="App">
-      <Menu />
-      <Todolist />
+      <Space direction="vertical" style={{ width: '100%' }} size={[0, 48]}>
+        <Layout>
+          <Header style={headerStyle}>
+            <span>TODOLIST</span>
+            <Menu />
+          </Header>
+          <Content style={contentStyle}>
+            <Todolist />
+          </Content>
+          <Footer style={footerStyle}>@Copyright reserved by franki & christ {dayjs().format('YYYY')}</Footer>
+        </Layout>
+      </Space>
     </div>
   );
 }

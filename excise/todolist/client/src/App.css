@@ -1,112 +1,35 @@
-.App {
-  width: 800px;
-  margin: auto;
-  text-align: center;
+.ant-space .ant-layout-content {
+  height: calc(100vh - 129px);
+  line-height: 60px !important;
+  overflow: auto;
 }
 
-.header-menu-wrapper {
-  text-align: right;
-}
-
-.header-menu-wrapper .home-url {
-  margin-right: 8px;
-}
-
-.header-menu-wrapper .avater-dropdown {
-  cursor: pointer;
+.todolist-wrapper h1 {
+  height: 60px;
+  line-height: 60px;
+  margin: 0;
 }
 
 .search-wrapper {
-  text-align: left;
-  margin-bottom: 10px;
+  width: 60%;
+  margin: auto;
+  margin-top: 30px;
 }
 
 .search-wrapper label {
   margin-right: 8px;
 }
 
-.search-wrapper input {
-  width: 620px;
-  height: 20px;
-  padding: 10px 5px;
-  margin-right: 10px;
-  border-radius: 4px;
-  outline: none;
-}
-
 .add-item-wrapper {
-  text-align: left;
-  margin-bottom: 10px;
+  width: 90%;
+  margin: auto;
 }
 
-.add-item-wrapper label {
-  margin-right: 28px;
+.add-item-wrapper .ant-picker {
+  width: 35% !important;
 }
 
-.add-item-wrapper input {
-  width: 300px;
-  height: 20px;
-  padding: 10px 5px;
-  margin-right: 10px;
-  border-radius: 4px;
-  outline: none;
-}
-
-.list-wrapper {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-.list-wrapper .list-item {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.list-wrapper .list-item .check {
-  margin-right: 10px;
-}
-
-.list-wrapper .list-item span {
-  margin-right: 10px;
-}
-
-.list-wrapper .list-item.active span {
-  text-decoration: line-through;
-}
-
-.list-wrapper .list-item button {
-  margin-right: 10px;
-}
-
-.filter-menu-wrapper {
-  margin-top: 10px;
-}
-
-.filter-menu-wrapper span {
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-.filter-menu-wrapper span.active {
-  color: red;
-}
-
-.pagination-wrapper {
-  margin-top: 10px;
-}
-
-.pagination-wrapper .prev,
-.next {
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-.pagination-wrapper input {
-  width: 20px;
-  margin-right: 8px;
-}
-
-.pagination-wrapper .indicator {
-  margin-right: 8px;
+.ant-list-item-content .date {
+  position: absolute;
+  right: 200px;
 }

@@ -4,10 +4,15 @@ import { Link, useLoaderData, useNavigate } from "react-router-dom";
 
 import { Dropdown, Space, Avatar, message } from 'antd';
 
+import './menu.css';
+
 const Menu = () => {
   const { user } = useLoaderData();
   const navigate = useNavigate();
-  const userLogined = user.code === 200;
+
+  const { code, data = {} } = user;
+  const { username, avatar } = data;
+  const userLogined = code === 200;
 
   React.useEffect(() => {
     if (!user.data?.username) {
@@ -47,21 +52,21 @@ const Menu = () => {
       type: 'divider',
     },
     {
-      label: 'continue',
+      label: 'About',
       key: '3',
     },
   ];
 
   return (
     <div className="header-menu-wrapper">
-      <Link className="home-url" to="/">Home</Link>
       <Dropdown className="avater-dropdown" menu={{ items }} trigger={['click']}>
         <a onClick={(e) => e.preventDefault()}>
           <Space>
-            <Avatar src={user.data?.avatar} title={user.data?.username} />
+            <Avatar src={avatar} />
           </Space>
         </a>
       </Dropdown>
+      <span>{username}</span>
     </div>
   );
 };

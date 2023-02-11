@@ -4,6 +4,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+
 import reportWebVitals from './reportWebVitals';
 import App, { loader as rootLoader }  from './App';
 import Register from './register';
@@ -18,12 +19,6 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     loader: rootLoader,
-    children: [
-      {
-        path: "contacts/:contactId",
-        element: <>contacts</>,
-      },
-    ],
   },
   {
     path: "/login",

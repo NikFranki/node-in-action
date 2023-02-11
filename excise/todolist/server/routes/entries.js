@@ -183,7 +183,7 @@ const entry = new Entry({});
  * 支持条件查询
  * 支持分页查询
  */
-router.post('/list', entry.getList);
+router.post('/list', entry.getList.bind(entry));
 
 /* post 添加一项 */
 router.post('/add', entry.addTodo);

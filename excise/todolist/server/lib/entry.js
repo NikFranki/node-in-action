@@ -29,6 +29,8 @@ class Entry {
     if (content) {
       values.push(content);
     }
+
+    const self = this;
     conn.query(
       query,
       values,
@@ -40,11 +42,11 @@ class Entry {
   
           // 当发现 pageNo > Math.ceil(total / pageSize) 时，说明分页索引越界了，需要往前查询
           const pageCounts = Math.ceil(result.length / pageSize);
-          if (pageNo > pageCounts) {
+          if (result.length > 0 && pageNo > pageCounts) {
             req.body.pageNo = pageCounts;
             req.body.pageSize = pageSize;
             req.body.status = status;
-            this.getList(req, res, next);
+            self.getList(req, res, next);
             return;
           }
   
