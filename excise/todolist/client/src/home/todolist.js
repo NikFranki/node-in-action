@@ -147,7 +147,7 @@ const Todolist = () => {
   const renderSearch = () => {
     return (
       <div className="search-wrapper">
-        <Search placeholder="input search text" onSearch={handleSearch} enterButton />
+        <Search placeholder="Input search text" onSearch={handleSearch} enterButton allowClear />
       </div>
     );
   };
@@ -159,6 +159,7 @@ const Todolist = () => {
           <Input
             style={{
               width: '50%',
+              textAlign: 'left',
             }}
             placeholder="Please input your todo"
             value={value}

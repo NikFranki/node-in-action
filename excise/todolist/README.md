@@ -177,6 +177,10 @@ upload.single("avatar")
 
 安装 `cors` 中间件
 
+```bash
+npm i cors
+```
+
 中间件挂载
 
 必须设置 `credentials` 字段，明确告诉浏览器这是验证过可以信任的资源
@@ -262,9 +266,25 @@ login(req, res, next) {
 
 ### 查看 TODO 列表
 
+效果如下：
+
 ![列表](http://qiniu.sevenyuan.cn/list.jpg)
 
-后端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/server/lib/entry.js`）
+服务端 todolist 表设计
+
+```sql
+/* 创建数据库表(todolist) */
+conn.query(
+  'CREATE TABLE IF NOT EXISTS todolist (' +
+  'id VARCHAR(40) NOT NULL, ' +
+  'content VARCHAR(512) NOT NULL, ' +
+  'status INT(10) NOT NULL, ' +
+  'date Date, ' +
+  'PRIMARY KEY(id))',
+);
+```
+
+后端代码细节（位置：`node-in-action/excise/todolist/server/lib/entry.js`）
 
 ```js
 async getList (req, res, next) {
@@ -272,7 +292,7 @@ async getList (req, res, next) {
 }
 ```
 
-前端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/client/src/home/todolist.js`）
+前端代码细节（位置：`node-in-action/excise/todolist/client/src/home/todolist.js`）
 
 ```js
 const Todolist = () => {
@@ -282,7 +302,7 @@ const Todolist = () => {
 
 ### 添加 TODO
 
-后端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/server/lib/entry.js`）
+后端代码细节（位置：`node-in-action/excise/todolist/server/lib/entry.js`）
 
 ```js
 async addTodo (req, res, next) {
@@ -290,7 +310,7 @@ async addTodo (req, res, next) {
 }
 ```
 
-前端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/client/src/home/todolist.js`）
+前端代码细节（位置：`node-in-action/excise/todolist/client/src/home/todolist.js`）
 
 ```js
 const Todolist = () => {
@@ -303,7 +323,7 @@ const Todolist = () => {
 
 ### 删除 TODO
 
-后端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/server/lib/entry.js`）
+后端代码细节（位置：`node-in-action/excise/todolist/server/lib/entry.js`）
 
 ```js
 async deleteTodo (req, res, next) {
@@ -311,7 +331,7 @@ async deleteTodo (req, res, next) {
 }
 ```
 
-前端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/client/src/home/todolist.js`）
+前端代码细节（位置：`node-in-action/excise/todolist/client/src/home/todolist.js`）
 
 ```js
 const Todolist = () => {
@@ -326,7 +346,7 @@ const Todolist = () => {
 
 目前只完成状态的更新，内容的更新还没实现
 
-后端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/server/lib/entry.js`）
+后端代码细节（位置：`node-in-action/excise/todolist/server/lib/entry.js`）
 
 ```js
 async updateTodo (req, res, next) {
@@ -334,7 +354,7 @@ async updateTodo (req, res, next) {
 }
 ```
 
-前端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/client/src/home/todolist.js`）
+前端代码细节（位置：`node-in-action/excise/todolist/client/src/home/todolist.js`）
 
 ```js
 const Todolist = () => {
@@ -347,7 +367,7 @@ const Todolist = () => {
 
 ### 筛选 TODO
 
-后端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/server/lib/entry.js`）
+后端代码细节（位置：`node-in-action/excise/todolist/server/lib/entry.js`）
 
 ```js
 async getList (req, res, next) {
@@ -359,7 +379,7 @@ async getList (req, res, next) {
 }
 ```
 
-前端代码细节（位置：`/Users/da.liu/person/node-in-action/excise/todolist/client/src/home/todolist.js`）
+前端代码细节（位置：`node-in-action/excise/todolist/client/src/home/todolist.js`）
 
 ```js
 const Todolist = () => {

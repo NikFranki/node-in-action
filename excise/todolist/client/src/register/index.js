@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   useNavigate,
+  Link,
 } from "react-router-dom";
 
 import { PlusOutlined } from '@ant-design/icons';
@@ -194,6 +195,8 @@ const Register = () => {
             <Button type="primary" htmlType="submit">
               Register
             </Button>
+            {' '}
+            Or <Link to='/login'>already an account, login!</Link>
           </Form.Item>
         </Form>
       </div>

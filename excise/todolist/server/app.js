@@ -9,11 +9,14 @@ const session = require('express-session');
 const notfound = require('./lib/middleware/notfound');
 const error = require('./lib/middleware/error');
 
+const rmUnusedImages = require('./lib/middleware/rm_unused_images');
+
 const entriesRouter = require('./routes/entries');
 const userRouter = require('./routes/user');
 
 const app = express();
 
+app.set('serverPath', 'http://localhost:8000/images/');
 app.set('imagesPath', path.join(__dirname, '/public/images/'));
 
 app.use(session({
@@ -36,9 +39,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'http://localhost:8081',],
   credentials: true,
 }));
+
+// rm unused images in public folder
+app.use(rmUnusedImages);
 
 app.use('/', entriesRouter);
 app.use('/user', userRouter);

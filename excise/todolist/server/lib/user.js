@@ -25,7 +25,8 @@ class User {
       return next(new Error('no file upload'));
     }
 
-    const avatar = 'http://localhost:8000/images/' + req.file.filename;
+    // 头像存放地址
+    const avatar = `${req.app.get('serverPath')}${req.file.filename}`;
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     conn.query(
@@ -65,6 +66,7 @@ class User {
             code: -1,
             message: 'user does not exist',
           }));
+          
           return next(new Error('user does not exist'));
         }
 
