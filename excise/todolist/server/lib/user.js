@@ -126,18 +126,21 @@ class User {
   }
 
   update(req, res, next) {
-    if (!req.body.username) return next(new Error('must specific username!'));
+    const newUsername = req.body.username;
+    const oldUsername = req.session.userInfo.username;
+    const oldAvatar = req.session.userInfo.avatar;
+    if (!newUsername) return next(new Error('must specific username!'));
 
-    const avatar = req.file ? `${req.app.get('serverPath')}${req.file.filename}` : '';
+    const newAvatar = req.file ? `${req.app.get('serverPath')}${req.file.filename}` : oldAvatar;
     conn.query(
       `UPDATE user SET username=?, avatar=? WHERE username=?`,
-      [req.body.username, avatar, req.session.userInfo.username],
+      [newUsername, newAvatar, oldUsername],
       (err) => {
         if (err) return next(err);
 
         const data = {
-          username: req.body.username,
-          avatar: avatar,
+          username: newUsername,
+          avatar: newAvatar,
         };
         // 更新用户登录态
         req.session.userInfo = data;

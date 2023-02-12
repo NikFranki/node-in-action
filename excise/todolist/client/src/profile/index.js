@@ -49,8 +49,6 @@ const Profile = () => {
 
   const { userInfo, onUserInfoChange } = React.useContext(TodolistContext);
   const { username, avatar: userInfoAvatar } = userInfo;
-  console.log('username: ', username);
-  console.log('userInfoAvatar: ', userInfo);
 
   const onFinish = async (values) => {
     values.avatar = avatar;
@@ -119,22 +117,26 @@ const Profile = () => {
         >
           <Upload
             name="avatar"
-            defaultFileList={[{
-              uid: '1',
-              name: 'avatar.png',
-              status: 'done',
-              url: userInfoAvatar,
-            }]}
+            defaultFileList={[
+              {
+                uid: '1',
+                name: 'avatar.png',
+                status: 'done',
+                url: userInfoAvatar,
+              }
+            ]}
             listType="picture-card"
             maxCount={1}
             accept=".jpg, .png"
             beforeUpload={(file) => {
+              console.log(1234);
               if (file) {
                 console.log('file', file);
                 setAvater(file);
               }
               return false;
             }}
+            onRemove={() => setAvater(null)}
           >
             <div>
               <PlusOutlined />

@@ -10,10 +10,10 @@ module.exports = function(req, res, next) {
       if (err) return next(err);
 
       // 获取所有的头像图片地址
-      const avatars = result.map((item) => item.avatar?.replace(req.app.get('serverPath'), ''));
+      const avatars = result.map((item) => item.avatar?.replace(req.app.get('serverPath'), '')).filter(item => item);
 
       // 进入 public/images 目录，把不存在的用户头像文件删除
-      const pathName =  req.app.get('imagesPath');
+      const pathName = req.app.get('imagesPath');
       fs.stat(pathName, (error, stats) => {
         if (error) {
           return next(error);
@@ -28,14 +28,19 @@ module.exports = function(req, res, next) {
             const filenames = [];
             (function iterator(count) {
               if (count === files.length) {
-                filenames
-                .filter(filename => !avatars.includes(filename))
-                .forEach(filename => {
-                  fs.unlink(`${pathName}${filename}`, (error) => {
-                    return next(error);
-                  });
+                const redundantFiles = filenames.filter(filename => !avatars.includes(filename));
+                redundantFiles.forEach((filename) => {
+                  if (fs.existsSync(`${pathName}${filename}`)) {
+                    fs.unlink(`${pathName}${filename}`, (err) => {
+                      if (err) {
+                        return next(error);
+                      }
+                    });
+                  } else {
+                    console.log("文件不存在");
+                  }
                 });
-                
+
                 return next();
               }
 
