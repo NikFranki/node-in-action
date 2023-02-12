@@ -9,6 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import App, { loader as rootLoader }  from './App';
 import Register from './register';
 import Login from './login';
+import Profile from './profile';
 import ErrorPage from "./error-page";
 
 import './index.css';
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
   },
 ]);
 

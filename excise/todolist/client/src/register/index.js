@@ -7,6 +7,8 @@ import {
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Upload, message } from 'antd';
 
+import request from '../utils/request';
+
 import './index.css';
 
 const formItemLayout = {
@@ -46,25 +48,20 @@ const Register = () => {
   const [avatar, setAvater] = React.useState(null);
 
   const onFinish = async (values) => {
-    if (!avatar) {
-      message.error('Avatar is required!');
-      return;
-    }
-
     values.avatar = avatar;
     const formData = new FormData();
     formData.append('username', values.username);
     formData.append('password', values.password);
     formData.append('repassword', values.repassword);
-    formData.append('avatar', values.avatar);
-    const res = await fetch(
+    if (values.avatar) {
+      formData.append('avatar', values.avatar);
+    }
+    const res = await request(
       'http://localhost:8000/user/register',
-      {
-        method: 'post',
-        credentials: 'include',
-        body: formData,
-      }
-    ).then((res) => res.json());
+      formData,
+      'post',
+      {}
+    );
     if (res.code !== 200) {
       message.error(res.message);
       return { ok: false };

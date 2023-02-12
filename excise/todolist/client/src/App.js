@@ -2,8 +2,10 @@ import React from 'react';
 import { Layout, Space } from 'antd';
 import dayjs from 'dayjs';
 
+import request from './utils/request';
 import Menu from './components/menu';
 import Todolist from './home/todolist';
+
 
 import './App.css';
 
@@ -30,13 +32,10 @@ const footerStyle = {
 };
 
 export async function loader() {
-  const user = await fetch(
+  const user = await request(
     'http://localhost:8000/user/searchUser',
-    {
-      method: 'post',
-      credentials: 'include',
-    },
-  ).then(res => res.json());
+    JSON.stringify({})
+  );
   return { user };
 }
 

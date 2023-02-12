@@ -4,6 +4,8 @@ import { Input, DatePicker, Button, Radio, Divider, List, Skeleton } from 'antd'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
 
+import request from '../utils/request';
+
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
 const FILTER_DONE = 3;
@@ -22,38 +24,27 @@ const Todolist = () => {
   const [filteredStatus, setFilteredStatus] = React.useState(FILTER_ALL);
   const [pager, setPager] = React.useState({ pageNo: DEFAULT_PAGENO, pageSize: DEFAULT_PAGESIZE, total: 0 });
 
-  const getList = (
+  const getList = async (
     status = filteredStatus,
     content = searchText,
     pageNo = pager.pageNo,
     pageSize = pager.pageSize,
   ) => {
-    fetch(
+    const res = await request(
       'http://localhost:8000/list',
-      {
-        method: 'post',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          status,
-          content,
-          pageNo,
-          pageSize,
-        })
-      }
-    )
-      .then(res => res.json())
-      .then(res => {
-        const { list, pageNo, pageSize, total } = res;
-        setList(list);
-        setPager({
-          pageNo,
-          pageSize,
-          total,
-        });
-      });
+      JSON.stringify({
+        status,
+        content,
+        pageNo,
+        pageSize,
+      })
+    );
+    setList(res.list);
+    setPager({
+      pageNo: res.pageNo,
+      pageSize: res.pageSize,
+      total: res.total,
+    });
   };
 
   React.useEffect(() => {
@@ -66,48 +57,30 @@ const Todolist = () => {
     getList(filteredStatus, value);
   };
 
-  const handleUpdate = (id, content, status, date) => {
-    fetch(
+  const handleUpdate = async (id, content, status, date) => {
+    await request(
       'http://localhost:8000/update',
-      {
-        method: 'post',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id,
-          content,
-          status,
-          date,
-        })
-      }
-    )
-      .then(() => {
-        getList();
-      });
+      JSON.stringify({
+        id,
+        content,
+        status,
+        date,
+      })
+    );
+    getList();
   };
 
-  const handleDelete = (id) => {
-    fetch(
+  const handleDelete = async (id) => {
+    await request(
       'http://localhost:8000/delete',
-      {
-        method: 'post',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id,
-        })
-      }
-    )
-      .then(() => {
-        getList();
-      });
+      JSON.stringify({
+        id,
+      })
+    );
+    getList();
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!value) {
       alert('content can not be empty!');
       return;
@@ -117,24 +90,15 @@ const Todolist = () => {
       return;
     };
 
-    fetch(
+    await request(
       'http://localhost:8000/add',
-      {
-        method: 'post',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          content: value,
-          date,
-        })
-      }
-    )
-      .then(() => {
-        getList();
-        setValue('');
+      JSON.stringify({
+        content: value,
+        date,
       })
+    );
+    getList();
+    setValue('');
   };
 
   const handleFilter = (e) => {

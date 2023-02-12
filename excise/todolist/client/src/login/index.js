@@ -7,23 +7,18 @@ import {
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 
+import request from '../utils/request';
+
 import './index.css';
 
 const Register = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    const res = await fetch(
+    const res = await request(
       'http://localhost:8000/user/login',
-      {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(values),
-      }
-    ).then((res) => res.json());
+      JSON.stringify(values),
+    );
     if (res.code !== 200) {
       message.error(res.message);
       return { ok: false };

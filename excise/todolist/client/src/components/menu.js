@@ -4,6 +4,8 @@ import { Link, useLoaderData, useNavigate } from "react-router-dom";
 
 import { Dropdown, Space, Avatar, message } from 'antd';
 
+import request from '../utils/request';
+
 import './menu.css';
 
 const Menu = () => {
@@ -24,15 +26,11 @@ const Menu = () => {
 
 
   const handleLogout = async () => {
-    // TODO: clear login user info
     try {
-      await fetch(
+      await request(
         'http://localhost:8000/user/logout',
-        {
-          method: 'post',
-          credentials: 'include',
-        },
-      ).then((res) => res.json());
+        JSON.stringify({})
+      );
       navigate('/login', { replace: true });
     } catch (error) {
       message.error(error.message);
@@ -52,7 +50,7 @@ const Menu = () => {
       type: 'divider',
     },
     {
-      label: 'About',
+      label: 'Profile',
       key: '3',
     },
   ];

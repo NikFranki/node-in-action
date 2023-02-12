@@ -4,10 +4,19 @@ const multer = require('multer');
 const path = require('path');
 
 const storage = multer.diskStorage({
+  // 确定上传文件存放服务器的物理路径
   destination: (req, file, callback) => {
+    // 文件不存在，跳过不存储
+    if (!file.originalname) {
+      return;
+    }
     callback(null, req.app.get('imagesPath'));
   },
   filename: (req, file, callback) => {
+    if (!file.originalname) {
+      return;
+    }
+    // 根据上传时间的 unix 时间戳来命名文件名
     callback(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
@@ -21,12 +30,8 @@ class User {
   }
 
   async register(req, res, next) {
-    if (!req.file) {
-      return next(new Error('no file upload'));
-    }
-
     // 头像存放地址
-    const avatar = `${req.app.get('serverPath')}${req.file.filename}`;
+    const avatar = req.file ? `${req.app.get('serverPath')}${req.file.filename}` : '';
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     conn.query(
