@@ -33,3 +33,8 @@
   position: absolute;
   right: 200px;
 }
+
+.ant-list-item-content .author {
+  position: absolute;
+  right: 300px;
+}

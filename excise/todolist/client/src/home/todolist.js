@@ -189,6 +189,7 @@ const Todolist = () => {
                     }}
                   />
                   <span>{item.content}</span>
+                  <span className="author">post by {item.username || 'franki'}</span>
                   <span className="date">{item.date}</span>
                 </div>
               </List.Item>
