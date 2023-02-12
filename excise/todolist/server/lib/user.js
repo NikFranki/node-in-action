@@ -71,7 +71,7 @@ class User {
             code: -1,
             message: 'user does not exist',
           }));
-          
+
           return next(new Error('user does not exist'));
         }
 
@@ -123,6 +123,29 @@ class User {
       message: 'success',
       data: req.session.userInfo,
     });
+  }
+
+  update(req, res, next) {
+    if (!req.body.username) return next(new Error('must specific username!'));
+
+    const avatar = req.file ? `${req.app.get('serverPath')}${req.file.filename}` : '';
+    conn.query(
+      `UPDATE user SET username=?, avatar=? WHERE username=?`,
+      [req.body.username, avatar, req.session.userInfo.username],
+      (err) => {
+        if (err) return next(err);
+
+        const data = {
+          username: req.body.username,
+          avatar: avatar,
+        };
+        // 更新用户登录态
+        req.session.userInfo = data;
+        res.send(JSON.stringify({
+          code: 200,
+          message: 'success',
+        }));
+      });
   }
 }
 

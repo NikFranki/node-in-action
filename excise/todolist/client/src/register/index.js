@@ -102,7 +102,6 @@ const Register = () => {
           name="register"
           onFinish={onFinish}
           initialValues={{
-            residence: ['zhejiang', 'hangzhou', 'xihu'],
             prefix: '86',
           }}
           style={{

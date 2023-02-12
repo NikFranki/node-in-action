@@ -7,12 +7,15 @@ import {
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 
+import TodolistContext from '../utils/todolist-context';
 import request from '../utils/request';
 
 import './index.css';
 
 const Register = () => {
   const navigate = useNavigate();
+
+  const { onUserInfoChange } = React.useContext(TodolistContext);
 
   const onFinish = async (values) => {
     const res = await request(
@@ -24,6 +27,8 @@ const Register = () => {
       return { ok: false };
     }
     navigate('/', { replace: true });
+    // 查询用户，更新用户信息，使得 context 传递 userInfo 给其他组件
+    onUserInfoChange();
     return { ok: true };
   };
 

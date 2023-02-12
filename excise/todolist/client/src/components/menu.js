@@ -1,29 +1,20 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Dropdown, Space, Avatar, message } from 'antd';
 
 import request from '../utils/request';
+import TodolistContext from '../utils/todolist-context';
 
 import './menu.css';
 
 const Menu = () => {
-  const { user } = useLoaderData();
   const navigate = useNavigate();
 
-  const { code, data = {} } = user;
-  const { username, avatar } = data;
-  const userLogined = code === 200;
-
-  React.useEffect(() => {
-    if (!user.data?.username) {
-      message.error('you have not login, please login first.');
-      navigate('/login', { replace: true });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  const { userInfo } = React.useContext(TodolistContext);
+  const { username, avatar } = userInfo;
+  const userLogined = userInfo.username;
 
   const handleLogout = async () => {
     try {
@@ -50,7 +41,7 @@ const Menu = () => {
       type: 'divider',
     },
     {
-      label: 'Profile',
+      label: <Link to="/profile">Profile</Link>,
       key: '3',
     },
   ];

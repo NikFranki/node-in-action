@@ -7,6 +7,9 @@ const user = new User({});
 /* user register */
 router.post('/register', upload.single("avatar"), user.register);
 
+/* userinfo update */
+router.post('/update', upload.single("avatar"), user.update);
+
 /* user login */
 router.post('/login', user.login);
 
