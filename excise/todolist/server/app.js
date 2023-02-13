@@ -13,6 +13,7 @@ const rmUnusedImages = require('./lib/middleware/rm_unused_images');
 
 const entriesRouter = require('./routes/entries');
 const userRouter = require('./routes/user');
+const emailRouter = require('./routes/email');
 
 const app = express();
 
@@ -20,13 +21,13 @@ app.set('serverPath', 'http://localhost:8000/images/');
 app.set('imagesPath', path.join(__dirname, '/public/images/'));
 
 app.use(session({
-  secret:"keyboard cat",
+  secret: "keyboard cat",
   resave: false,
   saveUninitialized: true,
   cookie: {
     maxAge: 1000 * 60 * 60 * 1, // 1 小时过期
   },
-  rolling:true,
+  rolling: true,
 }));
 
 // view engine setup
@@ -48,6 +49,7 @@ app.use(rmUnusedImages);
 
 app.use('/', entriesRouter);
 app.use('/user', userRouter);
+app.use('/email', emailRouter);
 
 app.use(notfound);
 app.use(error);
