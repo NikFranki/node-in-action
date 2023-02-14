@@ -5,6 +5,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
 
 import request from '../utils/request';
+import Edit from './edit-form-modal';
 
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
@@ -23,13 +24,31 @@ const Todolist = () => {
   const [date, setDate] = React.useState(dayjs().format('YYYY-MM-DD'));
   const [filteredStatus, setFilteredStatus] = React.useState(FILTER_ALL);
   const [pager, setPager] = React.useState({ pageNo: DEFAULT_PAGENO, pageSize: DEFAULT_PAGESIZE, total: 0 });
+  const [open, setOpen] = React.useState('');
+  const [todoDetail, setTodoDetail] = React.useState(null);
 
-  const getList = async (
-    status = filteredStatus,
-    content = searchText,
-    pageNo = pager.pageNo,
-    pageSize = pager.pageSize,
-  ) => {
+  const onSubmit = (values) => {
+    setOpen('');
+    handleUpdate(values);
+  };
+
+  const getTodoById = async (id) => {
+    const res = await request(
+      `http://localhost:8000/list/${id}`,
+      JSON.stringify({
+        id
+      }),
+    );
+    setTodoDetail(res.data);
+  };
+
+  const getList = async (params = {}) => {
+    const {
+      status = filteredStatus,
+      content = searchText,
+      pageNo = pager.pageNo,
+      pageSize = pager.pageSize,
+    } = params;
     const res = await request(
       'http://localhost:8000/list',
       JSON.stringify({
@@ -37,7 +56,7 @@ const Todolist = () => {
         content,
         pageNo,
         pageSize,
-      })
+      }),
     );
     setList(res.list);
     setPager({
@@ -52,12 +71,23 @@ const Todolist = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSearch = async (value) => {
-    setSearchText(value);
-    getList(filteredStatus, value);
+  const onEdit = (item) => {
+    setOpen('edit');
+    getTodoById(item.id);
   };
 
-  const handleUpdate = async (id, content, status, date) => {
+  const handleSearch = async (content) => {
+    setSearchText(content);
+    getList({ content });
+  };
+
+  const handleUpdate = async (params) => {
+    const {
+      id,
+      content,
+      status,
+      date,
+    } = params;
     await request(
       'http://localhost:8000/update',
       JSON.stringify({
@@ -105,7 +135,11 @@ const Todolist = () => {
     const status = e.target.value;
     setStatus(status);
     setFilteredStatus(status);
-    getList(status, searchText, DEFAULT_PAGENO, DEFAULT_PAGESIZE);
+    getList({
+      status,
+      pageNo: DEFAULT_PAGENO,
+      pageSize: DEFAULT_PAGESIZE,
+    });
   };
 
   const renderSearch = () => {
@@ -156,7 +190,11 @@ const Todolist = () => {
       >
         <InfiniteScroll
           dataLength={list.length}
-          next={() => getList(filteredStatus, searchText, pager.pageNo, (pager.pageNo + 1) * pager.pageSize)}
+          next={() => {
+            getList({
+              pageSize: (pager.pageNo + 1) * pager.pageSize
+            });
+          }}
           hasMore={list.length < pager.total}
           loader={
             <Skeleton
@@ -176,7 +214,7 @@ const Todolist = () => {
               <List.Item
                 key={item.email}
                 actions={[
-                  <Button type="default" key="list-loadmore-edit">edit</Button>,
+                  <Button type="default" key="list-loadmore-edit" onClick={() => onEdit(item)}>edit</Button>,
                   <Button type="primary" danger key="list-loadmore-more" onClick={() => handleDelete(item.id)}>delete</Button>
                 ]}
               >
@@ -184,8 +222,13 @@ const Todolist = () => {
                   <Radio
                     name="check"
                     checked={item.status === FILTER_DONE}
-                    onClick={(e) => {
-                      handleUpdate(item.id, item.content, item.status === FILTER_DONE ? FILTER_TODO : FILTER_DONE, item.date)
+                    onClick={() => {
+                      handleUpdate({
+                        id: item.id,
+                        content: item.content,
+                        status: item.status === FILTER_DONE ? FILTER_TODO : FILTER_DONE,
+                        date: item.date,
+                      });
                     }}
                   />
                   <span>{item.content}</span>
@@ -216,6 +259,14 @@ const Todolist = () => {
       {renderAddItem()}
       {renderList()}
       {renderFilter()}
+      <Edit
+        todoDetail={todoDetail}
+        open={open}
+        onSubmit={onSubmit}
+        onCancel={() => {
+          setOpen('');
+        }}
+      />
     </div>
   );
 };

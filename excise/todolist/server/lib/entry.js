@@ -13,8 +13,28 @@ class Entry {
     }
   }
 
-  async getList (req, res, next) {
-    const {pageSize, pageNo, status, content} = req.body;
+  async getTodoById(req, res, next) {
+    const { id } = req.body;
+
+    conn.query(
+      'SELECT * FROM todolist WHERE id=?',
+      [id],
+      (err, list) => {
+        if (err) return next(err);
+
+        res.send({
+          code: 200,
+          message: 'success',
+          data: list.map((item) => {
+            item.date = dayjs(item.date).format('YYYY-MM-DD');
+            return item;
+          })[0],
+        });
+      });
+  }
+
+  async getList(req, res, next) {
+    const { id, status, content, pageSize, pageNo, } = req.body;
     const isGtFILTER_ALL = status > FILTER_ALL;
     const sqlTotal = 'SELECT * FROM todolist';
     const statusQuery = isGtFILTER_ALL ? ' WHERE status=?' : '';
@@ -36,10 +56,10 @@ class Entry {
       values,
       (err, list) => {
         if (err) return next(err);
-  
+
         conn.query(sqlStatus, values, (err, result) => {
           if (err) return next(err);
-  
+
           // 当发现 pageNo > Math.ceil(total / pageSize) 时，说明分页索引越界了，需要往前查询
           const pageCounts = Math.ceil(result.length / pageSize);
           if (result.length > 0 && pageNo > pageCounts) {
@@ -49,7 +69,7 @@ class Entry {
             self.getList(req, res, next);
             return;
           }
-  
+
           res.send(JSON.stringify({
             code: 200,
             message: 'success',
@@ -62,14 +82,13 @@ class Entry {
             total: result.length,
           }));
         });
-  
       });
   }
 
-  async addTodo (req, res, next) {
+  async addTodo(req, res, next) {
     if (!req.body.content) return next(new Error('content can not be empty!'));
     if (!req.body.date) return next(new Error('date can not be empty!'));
-  
+
     // TODO: id auto_increasement
     const values = [uuid.v4(), req.body.content, FILTER_TODO, req.body.date];
     conn.query(
@@ -77,7 +96,7 @@ class Entry {
       values,
       (err) => {
         if (err) return next(err);
-  
+
         res.send(JSON.stringify({
           code: 200,
           message: 'success',
@@ -87,13 +106,22 @@ class Entry {
 
   async updateTodo(req, res, next) {
     if (!req.body.id) return next(new Error('must specific id!'));
-  
+
+    const { content, status, date, id } = req.body;
+    const map = new Map([
+      ['content=?', content],
+      ['status=?', status],
+      ['date=?', date],
+    ]);
+    const updateFields = Array.from(map).filter(([_, value]) => !!value).map(([key, _]) => key).join(', ');
+    const values = Array.from(map).filter(([_, value]) => !!value).map(([_, value]) => value);
+
     conn.query(
-      `UPDATE todolist SET content=?, STATUS=?, date=? WHERE id=?`,
-      [req.body.content, req.body.status, req.body.date, req.body.id],
+      `UPDATE todolist SET ${updateFields} WHERE id=?`,
+      [...values, req.body.id],
       (err) => {
         if (err) return next(err);
-  
+
         res.send(JSON.stringify({
           code: 200,
           message: 'success',
@@ -101,15 +129,15 @@ class Entry {
       });
   }
 
-  async deleteTodo (req, res, next) {
+  async deleteTodo(req, res, next) {
     if (!req.body.id) next(new Error('must specific id!'));
-  
+
     conn.query(
       'DELETE FROM todolist WHERE id=?',
       [req.body.id],
       (err) => {
         if (err) return next(err);
-  
+
         res.send(JSON.stringify({
           code: 200,
           message: 'success',
