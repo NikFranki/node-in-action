@@ -5,8 +5,9 @@ import dayjs from 'dayjs';
 
 import Menu from '../components/menu';
 import Todolist from './todolist';
+import SiderBar from '../components/sider-bar';
 
-const { Header, Footer, Content } = Layout;
+const { Header, Footer, Sider, Content } = Layout;
 
 const headerStyle = {
   color: '#fff',
@@ -14,6 +15,12 @@ const headerStyle = {
   paddingInline: 50,
   lineHeight: '64px',
   backgroundColor: '#7dbcea',
+};
+const siderStyle = {
+  textAlign: 'center',
+  lineHeight: '120px',
+  color: '#fff',
+  backgroundColor: '#3ba0e9',
 };
 const contentStyle = {
   textAlign: 'center',
@@ -37,9 +44,14 @@ function Home() {
             <span>TODOLIST</span>
             <Menu />
           </Header>
-          <Content style={contentStyle}>
-            <Todolist />
-          </Content>
+          <Layout>
+            <Sider style={siderStyle}>
+              <SiderBar />
+            </Sider>
+            <Content style={contentStyle}>
+              <Todolist />
+            </Content>
+          </Layout>
           <Footer style={footerStyle}>@Copyright reserved by franki & christ {dayjs().format('YYYY')}</Footer>
         </Layout>
       </Space>

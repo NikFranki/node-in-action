@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Input, DatePicker, Button, Radio, Divider, List, Skeleton } from 'antd';
+import { Input, DatePicker, Button, Radio, Divider, List, Skeleton, message } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
 
@@ -18,19 +18,12 @@ const { Search } = Input;
 
 const Todolist = () => {
   const [list, setList] = React.useState([]);
-  const [value, setValue] = React.useState('');
   const [searchText, setSearchText] = React.useState('');
   const [status, setStatus] = React.useState(FILTER_ALL);
-  const [date, setDate] = React.useState(dayjs().format('YYYY-MM-DD'));
   const [filteredStatus, setFilteredStatus] = React.useState(FILTER_ALL);
   const [pager, setPager] = React.useState({ pageNo: DEFAULT_PAGENO, pageSize: DEFAULT_PAGESIZE, total: 0 });
-  const [open, setOpen] = React.useState('');
-  const [todoDetail, setTodoDetail] = React.useState(null);
-
-  const onSubmit = (values) => {
-    setOpen('');
-    handleUpdate(values);
-  };
+  const [mode, setMode] = React.useState('');
+  const [todoDetail, setTodoDetail] = React.useState({});
 
   const getTodoById = async (id) => {
     const res = await request(
@@ -39,7 +32,7 @@ const Todolist = () => {
         id
       }),
     );
-    setTodoDetail(res.data);
+    return res.data;
   };
 
   const getList = async (params = {}) => {
@@ -71,9 +64,19 @@ const Todolist = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onEdit = (item) => {
-    setOpen('edit');
-    getTodoById(item.id);
+  const onSubmit = (values) => {
+    setMode('');
+    (mode === 'edit' ? handleUpdate : handleAdd)(values);
+  };
+
+  const onAdd = () => {
+    setMode('add');
+  };
+
+  const onEdit = async (item) => {
+    setMode('edit');
+    const res = await getTodoById(item.id);
+    setTodoDetail(res);
   };
 
   const handleSearch = async (content) => {
@@ -97,6 +100,7 @@ const Todolist = () => {
         date,
       })
     );
+    message.success('Edit successfully');
     getList();
   };
 
@@ -110,8 +114,12 @@ const Todolist = () => {
     getList();
   };
 
-  const handleAdd = async () => {
-    if (!value) {
+  const handleAdd = async (params) => {
+    const {
+      content,
+      date,
+    } = params;
+    if (!content) {
       alert('content can not be empty!');
       return;
     }
@@ -123,12 +131,12 @@ const Todolist = () => {
     await request(
       'http://localhost:8000/add',
       JSON.stringify({
-        content: value,
+        content,
         date,
       })
     );
+    message.success('Add successfully');
     getList();
-    setValue('');
   };
 
   const handleFilter = (e) => {
@@ -145,7 +153,7 @@ const Todolist = () => {
   const renderSearch = () => {
     return (
       <div className="search-wrapper">
-        <Search placeholder="Input search text" onSearch={handleSearch} enterButton allowClear />
+        <Search placeholder="Area search" onSearch={handleSearch} enterButton allowClear />
       </div>
     );
   };
@@ -153,25 +161,7 @@ const Todolist = () => {
   const renderAddItem = () => {
     return (
       <div className="add-item-wrapper">
-        <Input.Group compact>
-          <Input
-            style={{
-              width: '50%',
-              textAlign: 'left',
-            }}
-            placeholder="Please input your todo"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          <DatePicker
-            style={{
-              width: '50%',
-            }}
-            value={dayjs(new Date(date))}
-            onChange={(value) => setDate(value.format('YYYY-MM-DD'))}
-          />
-          <Button type="primary" onClick={handleAdd}>Add</Button>
-        </Input.Group>
+        <span className="prompt">Try it. </span><Button type="primary" onClick={onAdd}>Add todo</Button>
       </div>
     );
   };
@@ -261,10 +251,10 @@ const Todolist = () => {
       {renderFilter()}
       <Edit
         todoDetail={todoDetail}
-        open={open}
+        mode={mode}
         onSubmit={onSubmit}
         onCancel={() => {
-          setOpen('');
+          setMode('');
         }}
       />
     </div>

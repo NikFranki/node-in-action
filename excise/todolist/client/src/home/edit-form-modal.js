@@ -5,22 +5,27 @@ import dayjs from 'dayjs';
 
 const { TextArea } = Input;
 
-const Edit = ({ todoDetail, open, onSubmit, onCancel }) => {
+const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
   const [confirmLoading, setConfirmLoading] = React.useState(false);
   const [form] = Form.useForm();
 
+
   React.useEffect(() => {
-    if (todoDetail) {
+    if (todoDetail.id) {
       todoDetail.date = dayjs(new Date(todoDetail.date));
       form.setFieldsValue(todoDetail);
     }
+
+    return () => {
+      form.resetFields();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todoDetail]);
+  }, [todoDetail.id]);
 
   return (
     <Modal
-      open={!!open}
-      title={`${open.slice(0, 1).toUpperCase()}${open.slice(1).toLowerCase()} Todo`}
+      open={!!mode}
+      title={`${mode.slice(0, 1).toUpperCase()}${mode.slice(1).toLowerCase()} Todo`}
       okText="Ok"
       cancelText="Cancel"
       confirmLoading={confirmLoading}
@@ -31,7 +36,9 @@ const Edit = ({ todoDetail, open, onSubmit, onCancel }) => {
           .validateFields()
           .then((values) => {
             form.resetFields();
-            values.id = todoDetail.id;
+            if (todoDetail.id) {
+              values.id = todoDetail.id;
+            }
             if (values.date instanceof dayjs) {
               values.date = values.date.format('YYYY-MM-DD');
             }

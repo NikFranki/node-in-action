@@ -21,8 +21,12 @@
 }
 
 .add-item-wrapper {
-  width: 90%;
-  margin: auto;
+  padding-left: 80px;
+  text-align: left;
+}
+
+.add-item-wrapper .prompt {
+  color: #000;
 }
 
 .add-item-wrapper .ant-picker {
