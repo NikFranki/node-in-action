@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { Input, DatePicker, Button, Radio, Divider, List, Skeleton, message } from 'antd';
+import { Input, Button, Radio, Divider, List, Skeleton, message } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import dayjs from 'dayjs';
 
 import request from '../utils/request';
 import Edit from './edit-form-modal';
@@ -66,6 +65,7 @@ const Todolist = () => {
 
   const onSubmit = (values) => {
     setMode('');
+    setTodoDetail({});
     (mode === 'edit' ? handleUpdate : handleAdd)(values);
   };
 
@@ -89,6 +89,7 @@ const Todolist = () => {
       id,
       content,
       status,
+      folder_id,
       date,
     } = params;
     await request(
@@ -98,6 +99,7 @@ const Todolist = () => {
         content,
         status,
         date,
+        folder_id,
       })
     );
     message.success('Edit successfully');
@@ -117,6 +119,7 @@ const Todolist = () => {
   const handleAdd = async (params) => {
     const {
       content,
+      folder_id,
       date,
     } = params;
     if (!content) {
@@ -133,6 +136,7 @@ const Todolist = () => {
       JSON.stringify({
         content,
         date,
+        folder_id,
       })
     );
     message.success('Add successfully');

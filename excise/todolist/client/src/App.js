@@ -11,6 +11,7 @@ import Login from './login';
 import Home from './home';
 import Profile from './profile';
 import ErrorPage from "./error-page";
+import useFolders from './hooks/use-folders';
 
 import './App.css';
 
@@ -46,6 +47,8 @@ const router = createBrowserRouter([
 function App() {
   const [userInfo, setUserInfo] = React.useState({});
 
+  const { folders } = useFolders();
+
   React.useEffect(() => {
     onUserInfoChange();
   }, []);
@@ -58,6 +61,7 @@ function App() {
 
   const values = {
     userInfo,
+    folders,
     onUserInfoChange,
   };
 

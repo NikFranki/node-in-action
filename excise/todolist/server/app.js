@@ -14,6 +14,7 @@ const rmUnusedImages = require('./lib/middleware/rm_unused_images');
 const entriesRouter = require('./routes/entries');
 const userRouter = require('./routes/user');
 const emailRouter = require('./routes/email');
+const foldersRouter = require('./routes/folders');
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use(rmUnusedImages);
 app.use('/', entriesRouter);
 app.use('/user', userRouter);
 app.use('/email', emailRouter);
+app.use('/folders', foldersRouter);
 
 app.use(notfound);
 app.use(error);

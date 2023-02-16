@@ -14,6 +14,7 @@ conn.query(
   'id VARCHAR(40) NOT NULL, ' +
   'content VARCHAR(512) NOT NULL, ' +
   'status INT(10) NOT NULL, ' +
+  'folderId INT NOT NULL, ' +
   'date Date, ' +
   'PRIMARY KEY(id))',
 );
@@ -24,6 +25,16 @@ conn.query(
   'username VARCHAR(60) NOT NULL, ' +
   'password VARCHAR(100) NOT NULL, ' +
   'avatar VARCHAR(512))',
+);
+
+/* 创建数据库表(folders) */
+conn.query(
+  'CREATE TABLE IF NOT EXISTS folders (' +
+  'id INT UNSIGNED NOT NULL AUTO_INCREMENT, ' +
+  'name VARCHAR(60) NOT NULL UNIQUE, ' +
+  '`create_time` datetime DEFAULT CURRENT_TIMESTAMP, ' +
+  '`update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ' +
+  'PRIMARY KEY(id))',
 );
 
 module.exports = conn;

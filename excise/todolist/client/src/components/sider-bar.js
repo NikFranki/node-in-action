@@ -2,24 +2,26 @@ import React from 'react';
 
 import { Tree, Space, Input, Divider } from 'antd';
 
+import './sider-bar.css';
+
 const { Search } = Input;
 const { DirectoryTree } = Tree;
 
 const treeData = [
   {
-    title: 'parent 0',
+    title: 'default',
     key: '0-0',
     children: [
-      { title: 'leaf 0-0', key: '0-0-0', isLeaf: true },
-      { title: 'leaf 0-1', key: '0-0-1', isLeaf: true },
+      { title: 'default 0-0', key: '0-0-0', isLeaf: true },
+      { title: 'default 0-1', key: '0-0-1', isLeaf: true },
     ],
   },
   {
-    title: 'parent 1',
+    title: '英语 1',
     key: '0-1',
     children: [
-      { title: 'leaf 1-0', key: '0-1-0', isLeaf: true },
-      { title: 'leaf 1-1', key: '0-1-1', isLeaf: true },
+      { title: '英语 1-0', key: '0-1-0', isLeaf: true },
+      { title: '英语 1-1', key: '0-1-1', isLeaf: true },
     ],
   },
 ];
@@ -38,17 +40,17 @@ const SiderBar = () => {
   };
 
   return (
-    <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+    <Space className="sider-bar-wrapper" direction="vertical" size="small" style={{ display: 'flex' }}>
       <Search
         placeholder="site search"
         allowClear
         onSearch={onSearch}
-        style={{
-          width: 200,
-        }}
       />
-      <Divider />
+      <Divider
+        style={{ margin: '12px 0' }}
+      />
       <DirectoryTree
+        rootClassName="folder-wrapper"
         multiple
         defaultExpandAll
         onSelect={onSelect}

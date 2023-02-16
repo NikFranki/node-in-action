@@ -1,7 +1,10 @@
 import React from 'react';
 
-import { Modal, Input, DatePicker, Form } from 'antd';
+import { Select, Modal, Input, DatePicker, Form } from 'antd';
 import dayjs from 'dayjs';
+// import qs from 'qs';
+
+import useContextInfo from '../hooks/use-context-info';
 
 const { TextArea } = Input;
 
@@ -9,16 +12,17 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
   const [confirmLoading, setConfirmLoading] = React.useState(false);
   const [form] = Form.useForm();
 
+  const { folders } = useContextInfo();
+  const options = folders.map((item) => ({
+    value: item.id,
+    label: item.name,
+  }));
 
   React.useEffect(() => {
     if (todoDetail.id) {
       todoDetail.date = dayjs(new Date(todoDetail.date));
       form.setFieldsValue(todoDetail);
     }
-
-    return () => {
-      form.resetFields();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todoDetail.id]);
 
@@ -29,7 +33,10 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
       okText="Ok"
       cancelText="Cancel"
       confirmLoading={confirmLoading}
-      onCancel={onCancel}
+      onCancel={() => {
+        form.resetFields();
+        onCancel();
+      }}
       onOk={() => {
         setConfirmLoading(true);
         form
@@ -56,7 +63,7 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
         layout="vertical"
         name="form_in_modal"
         initialValues={{
-          modifier: 'public',
+          folder_id: 0,
         }}
       >
         <Form.Item
@@ -85,6 +92,26 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
             style={{
               width: '100%',
             }}
+          />
+        </Form.Item>
+        <Form.Item
+          name="folder_id"
+          label="Position"
+          rules={[
+            {
+              required: true,
+              message: 'Please select the position.',
+            },
+          ]}
+        >
+          <Select
+            showSearch
+            placeholder="select position"
+            defaultActiveFirstOption={false}
+            showArrow={false}
+            filterOption={false}
+            notFoundContent={null}
+            options={options}
           />
         </Form.Item>
       </Form>

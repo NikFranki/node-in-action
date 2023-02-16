@@ -90,9 +90,9 @@ class Entry {
     if (!req.body.date) return next(new Error('date can not be empty!'));
 
     // TODO: id auto_increasement
-    const values = [uuid.v4(), req.body.content, FILTER_TODO, req.body.date];
+    const values = [uuid.v4(), req.body.content, FILTER_TODO, req.body.folder_id, req.body.date];
     conn.query(
-      'INSERT INTO todolist (id, content, status, date) VALUES (?, ?, ?, ?)',
+      'INSERT INTO todolist (id, content, status, folder_id, date) VALUES (?, ?, ?, ?, ?)',
       values,
       (err) => {
         if (err) return next(err);
@@ -105,20 +105,21 @@ class Entry {
   }
 
   async updateTodo(req, res, next) {
-    if (!req.body.id) return next(new Error('must specific id!'));
+    const { content, status, folder_id, date, id } = req.body;
+    if (!id) return next(new Error('must specific id!'));
 
-    const { content, status, date, id } = req.body;
     const map = new Map([
       ['content=?', content],
       ['status=?', status],
+      ['folder_id=?', folder_id],
       ['date=?', date],
     ]);
-    const updateFields = Array.from(map).filter(([_, value]) => !!value).map(([key, _]) => key).join(', ');
-    const values = Array.from(map).filter(([_, value]) => !!value).map(([_, value]) => value);
+    const updateFields = Array.from(map).filter(([_, value]) => value !== undefined).map(([key, _]) => key).join(', ');
+    const values = Array.from(map).filter(([_, value]) => value !== undefined).map(([_, value]) => value);
 
     conn.query(
       `UPDATE todolist SET ${updateFields} WHERE id=?`,
-      [...values, req.body.id],
+      [...values, id],
       (err) => {
         if (err) return next(err);
 
