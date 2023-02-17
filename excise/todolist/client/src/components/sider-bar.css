@@ -15,3 +15,16 @@
 .folder-wrapper .ant-tree-node-content-wrapper {
   text-align: left;
 }
+
+.add-file-list-wrapper {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  line-height: 30px;
+  padding-left: 10px;
+  text-align: left;
+}
+
+.add-file-list-wrapper .add-icon {
+  margin-right: 5px;
+}

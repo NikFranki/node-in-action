@@ -14,7 +14,7 @@ conn.query(
   'id VARCHAR(40) NOT NULL, ' +
   'content VARCHAR(512) NOT NULL, ' +
   'status INT(10) NOT NULL, ' +
-  'folderId INT NOT NULL, ' +
+  'folder_id INT NOT NULL, ' +
   'date Date, ' +
   'PRIMARY KEY(id))',
 );
@@ -32,6 +32,7 @@ conn.query(
   'CREATE TABLE IF NOT EXISTS folders (' +
   'id INT UNSIGNED NOT NULL AUTO_INCREMENT, ' +
   'name VARCHAR(60) NOT NULL UNIQUE, ' +
+  'parent_id INT, ' +
   '`create_time` datetime DEFAULT CURRENT_TIMESTAMP, ' +
   '`update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ' +
   'PRIMARY KEY(id))',

@@ -6,7 +6,7 @@ import { BASE_URL } from '../config/url';
 const useFolders = () => {
   const [folders, setFolders] = React.useState([]);
 
-  const fetchPositions = async () => {
+  const fetchFolders = async () => {
     const res = await request(
       `${BASE_URL}/folders/list`,
     );
@@ -15,16 +15,17 @@ const useFolders = () => {
       id: 0,
       name: "默认文件夹",
       parent_id: 0,
-  });
+    });
     setFolders(newData);
   };
 
   React.useEffect(() => {
-    fetchPositions();
+    fetchFolders();
   }, []);
 
   return {
     folders,
+    onFetchFolders: fetchFolders,
   };
 };
 

@@ -20,8 +20,8 @@ class Folder {
     if (!req.body.name) return next(new Error('content can not be empty!'));
 
     conn.query(
-      'INSERT INTO folders (name) VALUES (?)',
-      [req.body.name],
+      `INSERT INTO folders (name, parent_id) VALUES (?, ?)`,
+      [req.body.name, req.body.parent_id],
       (err) => {
         if (err) return next(err);
 

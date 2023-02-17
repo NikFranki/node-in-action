@@ -47,7 +47,7 @@ const router = createBrowserRouter([
 function App() {
   const [userInfo, setUserInfo] = React.useState({});
 
-  const { folders } = useFolders();
+  const { folders, onFetchFolders } = useFolders();
 
   React.useEffect(() => {
     onUserInfoChange();
@@ -63,6 +63,7 @@ function App() {
     userInfo,
     folders,
     onUserInfoChange,
+    onFetchFolders,
   };
 
   return (
