@@ -20,42 +20,44 @@ const SiderBar = () => {
     label: item.name,
     parent_id: item.parent_id,
   }));
-  // const generateNestedFolders = () => {
-  //   // const map1 = folders.map((item) => ({ [item.id]: item }));
-  //   const map1 = {};
-  //   for (const item of folders) {
-  //     map1[item.id] = item;
-  //   }
-  //   for (const ey in map1) {
-  //     const value = map1[ey];
-  //     if (value.parent_id) {
-  //       map1[value.parent_id].chidren = (map1[value.parent_id].chidren || []).concat({
-  //         title: value.name,
-  //         parent_id: null,
-  //       });
-  //     }
-  //   }
+  const generateNestedFolders = (folders) => {
+    const map = {};
+    for (const item of folders) {
+      map[item.id] = { ...item };
+    }
 
-  //   const result = [];
-  //   for (const ww of Object.keys(map1)) {
-  //     if (!map1[ww].parent_id) {
-  //       result.push(map1[ww]);
-  //     }
-  //   }
-  //   return result;
-  // };
-  const treeData = folders.map((item, index) => {
-    return {
-      title: item.name,
-      key: `${index}`,
-      parent_id: item.parent_id || null,
-      children: [
-        { title: 'default 0', key: `${index}-0`, isLeaf: true },
-        { title: 'default 1', key: `${index}-1`, isLeaf: true },
-      ],
+    for (const key in map) {
+      const value = map[key];
+      if (value.parent_id) {
+        map[value.parent_id].children = map[value.parent_id].children || [];
+        map[value.parent_id].children.push(value);
+      }
+    }
+
+    const loop = (data = [], prefix = '') => {
+      return data.map((item) => {
+        const newItem = {
+          title: item.name,
+          key: `${prefix ? `${prefix}-` : ''}${item.id}`,
+          id: item.id,
+          parent_id: item.parent_id,
+          isLeaf: false,
+        };
+
+        if (item.children) {
+          newItem.children = loop(item.children, `${item.id}`)
+        }
+        return newItem;
+      });
     };
-  });
-  console.log(treeData);
+
+    const rootFolders = Object.keys(map)
+      .filter((key) => !map[key].parent_id)
+      .map((key) => map[key]);
+
+    return loop(rootFolders);
+  };
+  const treeData = generateNestedFolders(folders);
 
   const onSearch = () => {
     console.log('search');
