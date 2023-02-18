@@ -61,6 +61,7 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
         layout="vertical"
         name="form_in_modal"
         initialValues={{
+          date: dayjs(new Date()),
           position_id: [1],
         }}
       >
