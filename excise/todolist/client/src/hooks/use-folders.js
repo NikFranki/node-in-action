@@ -13,8 +13,8 @@ const useFolders = () => {
     const newData = res.list;
     newData.unshift({
       id: 0,
-      name: "默认文件夹",
-      parent_id: 0,
+      name: "default",
+      parent_id: null,
     });
     setFolders(newData);
   };

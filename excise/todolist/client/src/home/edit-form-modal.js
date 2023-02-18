@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { Select, Modal, Input, DatePicker, Form } from 'antd';
+import { Modal, Input, DatePicker, Form, Cascader } from 'antd';
 import dayjs from 'dayjs';
 // import qs from 'qs';
 
+import generateNestedFolders from '../utils/generate-nested-folders';
 import useContextInfo from '../hooks/use-context-info';
 
 const { TextArea } = Input;
@@ -13,10 +14,7 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
   const [form] = Form.useForm();
 
   const { folders } = useContextInfo();
-  const options = folders.map((item) => ({
-    value: item.id,
-    label: item.name,
-  }));
+  const options = generateNestedFolders(folders, true);
 
   React.useEffect(() => {
     if (todoDetail.id) {
@@ -49,6 +47,7 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
             if (values.date instanceof dayjs) {
               values.date = values.date.format('YYYY-MM-DD');
             }
+            values.folder_id = values.folder_id[values.folder_id.length - 1];
             onSubmit(values);
           })
           .catch((info) => {
@@ -63,7 +62,7 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
         layout="vertical"
         name="form_in_modal"
         initialValues={{
-          folder_id: 0,
+          folder_id: [0],
         }}
       >
         <Form.Item
@@ -104,14 +103,14 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
             },
           ]}
         >
-          <Select
-            showSearch
-            placeholder="select position"
-            defaultActiveFirstOption={false}
-            showArrow={false}
-            filterOption={false}
-            notFoundContent={null}
+          <Cascader
             options={options}
+            placeholder="Please select"
+            showSearch={{
+              filter: (inputValue, path) => {
+                return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+              },
+            }}
           />
         </Form.Item>
       </Form>

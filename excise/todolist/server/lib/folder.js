@@ -8,11 +8,35 @@ class Folder {
       (err, list) => {
         if (err) return next(err);
 
-        res.send(JSON.stringify({
-          code: 200,
-          message: 'success',
-          list,
-        }));
+        conn.query(
+          `SELECT folders.id, name, parent_id, create_time, update_time, todolist.id as todo_id, todolist.content as todo_content
+          FROM folders, todolist
+          WHERE folders.id = todolist.folder_id ORDER BY create_time DESC`,
+          [],
+          (err, result) => {
+            if (err) return next(err);
+
+            const folders = list.map(item => {
+              item.isLeaf = false;
+              return item;
+            });
+
+            const files = result.map((item) => ({
+              id: item.todo_id,
+              name: item.todo_content,
+              parent_id: item.id,
+              create_time: item.create_time,
+              update_time: item.update_time,
+              isLeaf: true,
+            }));
+
+            const newList = folders.concat(files);
+            res.send(JSON.stringify({
+              code: 200,
+              message: 'success',
+              list: newList,
+            }));
+          });
       });
   }
 

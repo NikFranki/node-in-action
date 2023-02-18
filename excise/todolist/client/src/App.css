@@ -1,3 +1,17 @@
+.ant-layout-sider {
+  flex: 0 0 300px !important;
+  max-width: 300px !important;
+  width: 300px !important;
+}
+
+.ant-layout-sider .ant-tree-list .ant-tree-title {
+  display: inline-block;
+  width: 150px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .ant-space .ant-layout-content {
   height: calc(100vh - 129px);
   line-height: 60px !important;
@@ -41,4 +55,9 @@
 .ant-list-item-content .author {
   position: absolute;
   right: 300px;
+}
+
+.ant-list-item-content .folder {
+  position: absolute;
+  right: 450px;
 }

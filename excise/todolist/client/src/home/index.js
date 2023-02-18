@@ -17,7 +17,11 @@ const headerStyle = {
   backgroundColor: '#7dbcea',
 };
 const siderStyle = {
-  textAlign: 'center',
+  flex: '0 0 300px',
+  maxWidth: '300px',
+  minWidth: '200px',
+  width: '300px',
+  textAlign: 'left',
   lineHeight: '120px',
   color: '#fff',
   backgroundColor: '#3ba0e9',

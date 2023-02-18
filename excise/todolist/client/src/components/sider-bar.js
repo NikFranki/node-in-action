@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { PlusCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Tree, Space, Input, Divider, Modal, Form, Select, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { Tree, Space, Input, Divider, Modal, Form, Cascader, message } from 'antd';
 
 import request from '../utils/request';
+import generateNestedFolders from '../utils/generate-nested-folders';
 import useContextInfo from '../hooks/use-context-info';
 import './sider-bar.css';
 
@@ -15,49 +16,10 @@ const SiderBar = () => {
   const [form] = Form.useForm();
 
   const { folders, onFetchFolders } = useContextInfo();
-  const options = folders.map((item) => ({
-    value: item.id,
-    label: item.name,
-    parent_id: item.parent_id,
-  }));
-  const generateNestedFolders = (folders) => {
-    const map = {};
-    for (const item of folders) {
-      map[item.id] = { ...item };
-    }
-
-    for (const key in map) {
-      const value = map[key];
-      if (value.parent_id) {
-        map[value.parent_id].children = map[value.parent_id].children || [];
-        map[value.parent_id].children.push(value);
-      }
-    }
-
-    const loop = (data = [], prefix = '') => {
-      return data.map((item) => {
-        const newItem = {
-          title: item.name,
-          key: `${prefix ? `${prefix}-` : ''}${item.id}`,
-          id: item.id,
-          parent_id: item.parent_id,
-          isLeaf: false,
-        };
-
-        if (item.children) {
-          newItem.children = loop(item.children, `${item.id}`)
-        }
-        return newItem;
-      });
-    };
-
-    const rootFolders = Object.keys(map)
-      .filter((key) => !map[key].parent_id)
-      .map((key) => map[key]);
-
-    return loop(rootFolders);
-  };
+  const [open, setOpen] = React.useState(false);
   const treeData = generateNestedFolders(folders);
+
+  const options = generateNestedFolders(folders, true);
 
   const onSearch = () => {
     console.log('search');
@@ -72,68 +34,11 @@ const SiderBar = () => {
   };
 
   const onAddFolder = () => {
-    Modal.confirm({
-      title: 'Confirm',
-      icon: <ExclamationCircleOutlined />,
-      content: <div className="folder-name-input">
-        <Form
-          form={form}
-          layout="vertical"
-          name="form_in_modal"
-        >
-          <Form.Item
-            name="name"
-            label="Folder Name"
-            rules={[
-              {
-                required: true,
-                message: 'Please input the folder name.',
-              },
-            ]}
-          >
-            <Input placeholder="folder name" />
-          </Form.Item>
-          <Form.Item
-            name="parent_id"
-            label="Parent Folder Name"
-          >
-            <Select
-              showSearch
-              placeholder="select folder"
-              defaultActiveFirstOption={false}
-              showArrow={false}
-              filterOption={false}
-              notFoundContent={null}
-              options={options}
-            />
-          </Form.Item>
-        </Form>
-      </div>,
-      okText: 'Ok',
-      cancelText: 'Cancel',
-      okButtonProps: {
-        loading: confirmLoading,
-      },
-      onOk: () => {
-        setConfirmLoading(true);
-        form
-          .validateFields()
-          .then(async (values) => {
-            form.resetFields();
-            await request(
-              `http://localhost:8000/folders/add`,
-              JSON.stringify(values),
-            );
-            onFetchFolders();
-            message.success('Add folder success.');
-          })
-          .catch((info) => {
-            console.log('Validate Failed:', info);
-          }).finally(() => {
-            setConfirmLoading(false);
-          });
-      }
-    });
+    setOpen(true);
+  };
+
+  const filter = (inputValue, path) => {
+    return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
   };
 
   return (
@@ -158,6 +63,77 @@ const SiderBar = () => {
         <PlusCircleOutlined className="add-icon" />
         add file list
       </div>
+      <Modal
+        open={open}
+        title={`Add file list`}
+        okText="Ok"
+        cancelText="Cancel"
+        confirmLoading={confirmLoading}
+        onCancel={() => {
+          form.resetFields();
+          setOpen(false);
+        }}
+        onOk={() => {
+          setConfirmLoading(true);
+          form
+            .validateFields()
+            .then(async (values) => {
+              form.resetFields();
+              values.parent_id = values.parent_id[values.parent_id.length - 1];
+              await request(
+                `http://localhost:8000/folders/add`,
+                JSON.stringify(values),
+              );
+              onFetchFolders();
+              message.success('Add folder success.');
+              setOpen(false);
+            })
+            .catch((info) => {
+              console.log('Validate Failed:', info);
+            }).finally(() => {
+              setConfirmLoading(false);
+            });
+        }}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          name="form_in_modal"
+          initialValues={{
+            parent_id: [0],
+          }}
+          onChange={
+            (v) => {
+              console.log(11, v);
+            }
+          }
+        >
+          <Form.Item
+            name="name"
+            label="Folder Name"
+            rules={[
+              {
+                required: true,
+                message: 'Please input the folder name.',
+              },
+            ]}
+          >
+            <Input placeholder="folder name" />
+          </Form.Item>
+          <Form.Item
+            name="parent_id"
+            label="Parent Folder Name"
+          >
+            <Cascader
+              options={options}
+              placeholder="Please select"
+              showSearch={{
+                filter,
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Space>
   );
 };

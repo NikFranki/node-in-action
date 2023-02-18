@@ -4,7 +4,7 @@ const conn = require('../services/db');
 
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
-const FILTER_DONE = 3;
+// const FILTER_DONE = 3;
 
 class Entry {
   constructor(obj) {
@@ -34,13 +34,15 @@ class Entry {
   }
 
   async getList(req, res, next) {
-    const { id, status, content, pageSize, pageNo, } = req.body;
+    const { status, content, pageSize, pageNo, } = req.body;
     const isGtFILTER_ALL = status > FILTER_ALL;
-    const sqlTotal = 'SELECT * FROM todolist';
+    // SELECT todolist.id, content, status, folder_id, folders.name as folder_name, date FROM todolist, folders WHERE todolist.folder_id = folders.id;
+    const sqlTotal = 'SELECT todolist.id, content, status, folder_id, folders.name as folder_name, date FROM todolist, folders';
     const statusQuery = isGtFILTER_ALL ? ' WHERE status=?' : '';
     const contentQuery = content ? ` ${statusQuery ? 'AND' : 'WHERE'} content LIKE '${content}%'` : '';
+    const folderQuery = ` ${statusQuery || contentQuery ? 'AND' : 'WHERE'} todolist.folder_id = folders.id`;
     const paginationQuery = pageSize && pageNo ? ` LIMIT ${pageSize} OFFSET ${pageSize * (pageNo - 1)}` : '';
-    const sqlStatus = `${sqlTotal}${statusQuery}${contentQuery} ORDER BY date DESC`;
+    const sqlStatus = `${sqlTotal}${statusQuery}${contentQuery}${folderQuery} ORDER BY date DESC`;
     const query = `${sqlStatus}${paginationQuery}`;
     const values = [];
     if (isGtFILTER_ALL) {

@@ -226,6 +226,7 @@ const Todolist = () => {
                     }}
                   />
                   <span>{item.content}</span>
+                  <span className="folder">belongs with {item.folder_name}</span>
                   <span className="author">post by {item.username || 'franki'}</span>
                   <span className="date">{item.date}</span>
                 </div>
