@@ -268,7 +268,7 @@ login(req, res, next) {
 
 效果如下：
 
-![列表](http://qiniu.sevenyuan.cn/list.jpg)
+![列表](http://qiniu.sevenyuan.cn/todolist-home.jpg)
 
 服务端 todolist 表设计
 
