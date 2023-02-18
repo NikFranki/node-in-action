@@ -46,7 +46,6 @@ const router = createBrowserRouter([
 
 function App() {
   const [userInfo, setUserInfo] = React.useState({});
-
   const { folders, onFetchFolders } = useFolders();
 
   React.useEffect(() => {

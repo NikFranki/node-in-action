@@ -4,6 +4,7 @@ import { Input, Button, Radio, Divider, List, Skeleton, message } from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import request from '../utils/request';
+import useContextInfo from '../hooks/use-context-info';
 import Edit from './edit-form-modal';
 
 const FILTER_ALL = 1;
@@ -23,6 +24,8 @@ const Todolist = () => {
   const [pager, setPager] = React.useState({ pageNo: DEFAULT_PAGENO, pageSize: DEFAULT_PAGESIZE, total: 0 });
   const [mode, setMode] = React.useState('');
   const [todoDetail, setTodoDetail] = React.useState({});
+
+  const { onFetchFolders } = useContextInfo();
 
   const getTodoById = async (id) => {
     const res = await request(
@@ -63,10 +66,29 @@ const Todolist = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onSubmit = (values) => {
+  const onSubmit = async (mode, values) => {
     setMode('');
     setTodoDetail({});
-    (mode === 'edit' ? handleUpdate : handleAdd)(values);
+
+    if (!values.content) {
+      alert('content can not be empty!');
+      return;
+    }
+    if (!values.date) {
+      alert('date can not be empty!');
+      return;
+    };
+
+    values.position_id = Array.isArray(values.position_id) && values.position_id.length > 0 ? values.position_id : [1];
+    values.folder_id = values.position_id[values.position_id.length - 1];
+
+    await request(
+      `http://localhost:8000/${mode === 'add' ? 'add' : 'update'}`,
+      JSON.stringify(values),
+    );
+    message.success(`${mode[0].toUpperCase()}${mode.slice(1).toLowerCase()} successfully`);
+    getList();
+    onFetchFolders();
   };
 
   const onAdd = () => {
@@ -84,28 +106,6 @@ const Todolist = () => {
     getList({ content });
   };
 
-  const handleUpdate = async (params) => {
-    const {
-      id,
-      content,
-      status,
-      folder_id,
-      date,
-    } = params;
-    await request(
-      'http://localhost:8000/update',
-      JSON.stringify({
-        id,
-        content,
-        status,
-        date,
-        folder_id,
-      })
-    );
-    message.success('Edit successfully');
-    getList();
-  };
-
   const handleDelete = async (id) => {
     await request(
       'http://localhost:8000/delete',
@@ -113,33 +113,6 @@ const Todolist = () => {
         id,
       })
     );
-    getList();
-  };
-
-  const handleAdd = async (params) => {
-    const {
-      content,
-      folder_id,
-      date,
-    } = params;
-    if (!content) {
-      alert('content can not be empty!');
-      return;
-    }
-    if (!date) {
-      alert('date can not be empty!');
-      return;
-    };
-
-    await request(
-      'http://localhost:8000/add',
-      JSON.stringify({
-        content,
-        date,
-        folder_id,
-      })
-    );
-    message.success('Add successfully');
     getList();
   };
 
@@ -217,11 +190,9 @@ const Todolist = () => {
                     name="check"
                     checked={item.status === FILTER_DONE}
                     onClick={() => {
-                      handleUpdate({
-                        id: item.id,
-                        content: item.content,
+                      onSubmit('edit', {
+                        ...item,
                         status: item.status === FILTER_DONE ? FILTER_TODO : FILTER_DONE,
-                        date: item.date,
                       });
                     }}
                   />

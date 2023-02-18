@@ -27,6 +27,7 @@ class Entry {
           message: 'success',
           data: list.map((item) => {
             item.date = dayjs(item.date).format('YYYY-MM-DD');
+            item.position_id = JSON.parse(item.position_id || '[]');
             return item;
           })[0],
         });
@@ -37,7 +38,7 @@ class Entry {
     const { status, content, pageSize, pageNo, } = req.body;
     const isGtFILTER_ALL = status > FILTER_ALL;
     // SELECT todolist.id, content, status, folder_id, folders.name as folder_name, date FROM todolist, folders WHERE todolist.folder_id = folders.id;
-    const sqlTotal = 'SELECT todolist.id, content, status, folder_id, folders.name as folder_name, date FROM todolist, folders';
+    const sqlTotal = 'SELECT todolist.id, content, status, position_id, folder_id, folders.name as folder_name, date FROM todolist, folders';
     const statusQuery = isGtFILTER_ALL ? ' WHERE status=?' : '';
     const contentQuery = content ? ` ${statusQuery ? 'AND' : 'WHERE'} content LIKE '${content}%'` : '';
     const folderQuery = ` ${statusQuery || contentQuery ? 'AND' : 'WHERE'} todolist.folder_id = folders.id`;
@@ -72,17 +73,18 @@ class Entry {
             return;
           }
 
-          res.send(JSON.stringify({
+          res.send({
             code: 200,
             message: 'success',
             list: list.map((item) => {
               item.date = dayjs(item.date).format('YYYY-MM-DD');
+              item.position_id = JSON.parse(item.position_id || '[]');
               return item;
             }),
             pageNo,
             pageSize,
             total: result.length,
-          }));
+          });
         });
       });
   }
@@ -91,28 +93,35 @@ class Entry {
     if (!req.body.content) return next(new Error('content can not be empty!'));
     if (!req.body.date) return next(new Error('date can not be empty!'));
 
-    // TODO: id auto_increasement
-    const values = [uuid.v4(), req.body.content, FILTER_TODO, req.body.folder_id, req.body.date];
+    const values = [
+      uuid.v4(),
+      req.body.content,
+      FILTER_TODO,
+      JSON.stringify(req.body.position_id),
+      req.body.folder_id,
+      req.body.date,
+    ];
     conn.query(
-      'INSERT INTO todolist (id, content, status, folder_id, date) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO todolist (id, content, status, position_id, folder_id, date) VALUES (?, ?, ?, ?, ?, ?)',
       values,
       (err) => {
         if (err) return next(err);
 
-        res.send(JSON.stringify({
+        res.send({
           code: 200,
           message: 'success',
-        }));
+        });
       });
   }
 
   async updateTodo(req, res, next) {
-    const { content, status, folder_id, date, id } = req.body;
+    const { content, status, position_id, folder_id, date, id } = req.body;
     if (!id) return next(new Error('must specific id!'));
 
     const map = new Map([
       ['content=?', content],
       ['status=?', status],
+      ['position_id=?', JSON.stringify(position_id)],
       ['folder_id=?', folder_id],
       ['date=?', date],
     ]);
@@ -125,10 +134,10 @@ class Entry {
       (err) => {
         if (err) return next(err);
 
-        res.send(JSON.stringify({
+        res.send({
           code: 200,
           message: 'success',
-        }));
+        });
       });
   }
 
@@ -141,10 +150,10 @@ class Entry {
       (err) => {
         if (err) return next(err);
 
-        res.send(JSON.stringify({
+        res.send({
           code: 200,
           message: 'success',
-        }));
+        });
       });
   }
 }

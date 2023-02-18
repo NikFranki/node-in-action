@@ -20,6 +20,7 @@ const SiderBar = () => {
   const treeData = generateNestedFolders(folders);
 
   const options = generateNestedFolders(folders, true);
+  console.log(treeData);
 
   const onSearch = () => {
     console.log('search');
@@ -79,7 +80,9 @@ const SiderBar = () => {
             .validateFields()
             .then(async (values) => {
               form.resetFields();
-              values.parent_id = values.parent_id[values.parent_id.length - 1];
+              if (values.parent_id ) {
+                values.parent_id = values.parent_id[values.parent_id.length - 1];
+              }
               await request(
                 `http://localhost:8000/folders/add`,
                 JSON.stringify(values),
@@ -100,7 +103,7 @@ const SiderBar = () => {
           layout="vertical"
           name="form_in_modal"
           initialValues={{
-            parent_id: [0],
+            parent_id: [1],
           }}
           onChange={
             (v) => {

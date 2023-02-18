@@ -10,13 +10,7 @@ const useFolders = () => {
     const res = await request(
       `${BASE_URL}/folders/list`,
     );
-    const newData = res.list;
-    newData.unshift({
-      id: 0,
-      name: "default",
-      parent_id: null,
-    });
-    setFolders(newData);
+    setFolders(res.list);
   };
 
   React.useEffect(() => {

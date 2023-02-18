@@ -1,6 +1,34 @@
 const conn = require('../services/db');
 
 class Folder {
+
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    conn.query(
+      'SELECT * FROM folders',
+      [],
+      (err, list) => {
+        if (err)  throw new Error('select error');
+
+        const hasDefaultFolder = list.find((item) => item.id === 1);
+        if (hasDefaultFolder) {
+          return;
+        }
+
+        conn.query(
+          `INSERT INTO folders (name, parent_id) VALUES (?, ?)`,
+          ['default', null],
+          (err, result) => {
+            if (err) throw new Error(err);
+          },
+        )
+      },
+    );
+  }
+
   async getList(req, res, next) {
     conn.query(
       'SELECT * FROM folders ORDER BY create_time DESC',
@@ -20,7 +48,7 @@ class Folder {
               item.isLeaf = false;
               return item;
             });
-
+            
             const files = result.map((item) => ({
               id: item.todo_id,
               name: item.todo_content,

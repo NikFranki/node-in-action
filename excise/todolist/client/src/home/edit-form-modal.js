@@ -47,8 +47,7 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
             if (values.date instanceof dayjs) {
               values.date = values.date.format('YYYY-MM-DD');
             }
-            values.folder_id = values.folder_id[values.folder_id.length - 1];
-            onSubmit(values);
+            onSubmit(mode, values);
           })
           .catch((info) => {
             console.log('Validate Failed:', info);
@@ -62,7 +61,7 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
         layout="vertical"
         name="form_in_modal"
         initialValues={{
-          folder_id: [0],
+          position_id: [1],
         }}
       >
         <Form.Item
@@ -94,14 +93,8 @@ const Edit = ({ todoDetail, mode, onSubmit, onCancel }) => {
           />
         </Form.Item>
         <Form.Item
-          name="folder_id"
+          name="position_id"
           label="Position"
-          rules={[
-            {
-              required: true,
-              message: 'Please select the position.',
-            },
-          ]}
         >
           <Cascader
             options={options}
