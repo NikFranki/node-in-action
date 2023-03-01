@@ -189,7 +189,7 @@ router.post('/list', entry.getList.bind(entry));
  * post 获取列表
  * 根据 id 查询
  */
-router.post('/list/:id', entry.getTodoById);
+router.post('/get_list_by_id', entry.getTodoById);
 
 /* post 添加一项 */
 router.post('/add', entry.addTodo);

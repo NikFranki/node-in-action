@@ -6,30 +6,26 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import request from '../utils/request';
 import useContextInfo from '../hooks/use-context-info';
 import Edit from './edit-form-modal';
+import { DEFAULT_PAGESIZE } from '../constant';
 
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
 const FILTER_DONE = 3;
 
-const DEFAULT_PAGENO = 1;
-const DEFAULT_PAGESIZE = 20;
-
 const { Search } = Input;
 
 const Todolist = () => {
-  const [list, setList] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
   const [status, setStatus] = React.useState(FILTER_ALL);
   const [filteredStatus, setFilteredStatus] = React.useState(FILTER_ALL);
-  const [pager, setPager] = React.useState({ pageNo: DEFAULT_PAGENO, pageSize: DEFAULT_PAGESIZE, total: 0 });
   const [mode, setMode] = React.useState('');
   const [todoDetail, setTodoDetail] = React.useState({});
 
-  const { onFetchFolders } = useContextInfo();
+  const { list, pager, onFetchFolders, onFetchTodolist } = useContextInfo();
 
   const getTodoById = async (id) => {
     const res = await request(
-      `http://localhost:8000/list/${id}`,
+      `http://localhost:8000/get_list_by_id`,
       JSON.stringify({
         id
       }),
@@ -44,20 +40,12 @@ const Todolist = () => {
       pageNo = pager.pageNo,
       pageSize = pager.pageSize,
     } = params;
-    const res = await request(
-      'http://localhost:8000/list',
-      JSON.stringify({
-        status,
-        content,
-        pageNo,
-        pageSize,
-      }),
-    );
-    setList(res.list);
-    setPager({
-      pageNo: res.pageNo,
-      pageSize: res.pageSize,
-      total: res.total,
+
+    onFetchTodolist({
+      status,
+      content,
+      pageNo,
+      pageSize,
     });
   };
 
@@ -122,8 +110,6 @@ const Todolist = () => {
     setFilteredStatus(status);
     getList({
       status,
-      pageNo: DEFAULT_PAGENO,
-      pageSize: DEFAULT_PAGESIZE,
     });
   };
 
@@ -162,7 +148,7 @@ const Todolist = () => {
               pageSize: (pager.pageNo + 1) * pager.pageSize
             });
           }}
-          hasMore={list.length < pager.total}
+          hasMore={list.length < pager.total && list.length > DEFAULT_PAGESIZE}
           loader={
             <Skeleton
               avatar

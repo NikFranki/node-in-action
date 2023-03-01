@@ -35,17 +35,28 @@ class Entry {
   }
 
   async getList(req, res, next) {
-    const { status, content, pageSize, pageNo, } = req.body;
+    const {
+      id,
+      status,
+      content,
+      pageSize,
+      pageNo,
+      root_id,
+    } = req.body;
     const isGtFILTER_ALL = status > FILTER_ALL;
     // SELECT todolist.id, content, status, folder_id, folders.name as folder_name, date FROM todolist, folders WHERE todolist.folder_id = folders.id;
     const sqlTotal = 'SELECT todolist.id, content, status, position_id, folder_id, folders.name as folder_name, date FROM todolist, folders';
-    const statusQuery = isGtFILTER_ALL ? ' WHERE status=?' : '';
+    const idQuery = id ? ' WHERE todolist.id=?' : '';
+    const statusQuery = isGtFILTER_ALL ? ` ${idQuery ? 'AND' : 'WHERE'} status=?` : '';
     const contentQuery = content ? ` ${statusQuery ? 'AND' : 'WHERE'} content LIKE '${content}%'` : '';
-    const folderQuery = ` ${statusQuery || contentQuery ? 'AND' : 'WHERE'} todolist.folder_id = folders.id`;
+    const folderQuery = ` ${idQuery || statusQuery || contentQuery ? 'AND' : 'WHERE'} todolist.folder_id = folders.id`;
     const paginationQuery = pageSize && pageNo ? ` LIMIT ${pageSize} OFFSET ${pageSize * (pageNo - 1)}` : '';
-    const sqlStatus = `${sqlTotal}${statusQuery}${contentQuery}${folderQuery} ORDER BY date DESC`;
+    const sqlStatus = `${sqlTotal}${idQuery}${statusQuery}${contentQuery}${folderQuery} ORDER BY date DESC`;
     const query = `${sqlStatus}${paginationQuery}`;
     const values = [];
+    if (idQuery) {
+      values.push(id);
+    }
     if (isGtFILTER_ALL) {
       values.push(status);
     }
@@ -73,14 +84,19 @@ class Entry {
             return;
           }
 
+          let data = list.map((item) => {
+            item.date = dayjs(item.date).format('YYYY-MM-DD');
+            item.position_id = JSON.parse(item.position_id || '[]');
+            return item;
+          });
+          if (!isNaN(root_id)) {
+            data = data.filter(item => item.position_id.includes(root_id));
+          }
+
           res.send({
             code: 200,
             message: 'success',
-            list: list.map((item) => {
-              item.date = dayjs(item.date).format('YYYY-MM-DD');
-              item.position_id = JSON.parse(item.position_id || '[]');
-              return item;
-            }),
+            list: data,
             pageNo,
             pageSize,
             total: result.length,

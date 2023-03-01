@@ -4,25 +4,15 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import request from './utils/request';
 import TodolistContext from './utils/todolist-context';
 import Register from './register';
 import Login from './login';
 import Home from './home';
 import Profile from './profile';
 import ErrorPage from "./error-page";
-import useFolders from './hooks/use-folders';
+import useGlobalContextDispatch from './hooks/use-global-context-dispatch';
 
 import './App.css';
-
-export async function loader() {
-  const user = await request(
-    'http://localhost:8000/user/searchUser',
-    JSON.stringify({})
-  );
-
-  return user;
-}
 
 const router = createBrowserRouter([
   {
@@ -45,25 +35,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [userInfo, setUserInfo] = React.useState({});
-  const { folders, onFetchFolders } = useFolders();
-
-  React.useEffect(() => {
-    onUserInfoChange();
-  }, []);
-
-  const onUserInfoChange = () => {
-    loader().then((user) => {
-      setUserInfo(user.data || {});
-    });
-  };
-
-  const values = {
-    userInfo,
-    folders,
-    onUserInfoChange,
-    onFetchFolders,
-  };
+  const values = useGlobalContextDispatch();
 
   return (
     <TodolistContext.Provider value={values}>

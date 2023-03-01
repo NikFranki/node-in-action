@@ -15,23 +15,34 @@ const SiderBar = () => {
   const [confirmLoading, setConfirmLoading] = React.useState(false);
   const [form] = Form.useForm();
 
-  const { folders, onFetchFolders } = useContextInfo();
+  const {
+    folders,
+    onFetchFolders,
+    onFetchTodolist,
+    onSetFolderRootId,
+  } = useContextInfo();
   const [open, setOpen] = React.useState(false);
   const treeData = generateNestedFolders(folders);
 
   const options = generateNestedFolders(folders, true);
-  console.log(treeData);
 
   const onSearch = () => {
     console.log('search');
   };
 
-  const onSelect = (keys, info) => {
-    console.log('Trigger Select', keys, info);
-  };
-
-  const onExpand = (keys, info) => {
-    console.log('Trigger Expand', keys, info);
+  const onSelect = async (keys, infos) => {
+    if (infos.node.isLeaf) {
+      return onFetchTodolist({
+        id: infos.node.id,
+        root_id: undefined,
+      });
+    }
+    const arr = keys[0].split('-');
+    const root_id = +arr[arr.length - 1];
+    onFetchTodolist({
+      root_id,
+    });
+    onSetFolderRootId(root_id);
   };
 
   const onAddFolder = () => {
@@ -57,7 +68,6 @@ const SiderBar = () => {
         multiple
         defaultExpandAll
         onSelect={onSelect}
-        onExpand={onExpand}
         treeData={treeData}
       />
       <div className="add-file-list-wrapper" onClick={onAddFolder}>
@@ -80,7 +90,7 @@ const SiderBar = () => {
             .validateFields()
             .then(async (values) => {
               form.resetFields();
-              if (values.parent_id ) {
+              if (values.parent_id) {
                 values.parent_id = values.parent_id[values.parent_id.length - 1];
               }
               await request(
