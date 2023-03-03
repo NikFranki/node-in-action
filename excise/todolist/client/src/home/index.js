@@ -49,7 +49,7 @@ function Home() {
             <Menu />
           </Header>
           <Layout>
-            <Sider style={siderStyle}>
+            <Sider className="menu-side-bar" style={siderStyle}>
               <SiderBar />
             </Sider>
             <Content style={contentStyle}>

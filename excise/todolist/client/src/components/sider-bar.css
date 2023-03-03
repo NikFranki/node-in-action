@@ -4,7 +4,19 @@
 }
 
 .sider-bar-wrapper .ant-space-item:nth-child(3) {
+  height: calc(100vh - 262px);
+  max-width: 280px;
   padding: 0 10px;
+  overflow: auto;
+  padding-bottom: 30px;
+}
+
+.sider-bar-wrapper .ant-space-item:nth-child(4) {
+  position: relative;
+}
+
+.sider-bar-wrapper .ant-tree-node-content-wrapper {
+  white-space: nowrap;
 }
 
 .folder-wrapper {
@@ -18,11 +30,11 @@
 
 .add-file-list-wrapper {
   position: absolute;
-  bottom: 0;
+  bottom: -22px;
   width: 100%;
   line-height: 30px;
-  padding-left: 10px;
-  text-align: left;
+  text-align: center;
+  cursor: pointer;
 }
 
 .add-file-list-wrapper .add-icon {
