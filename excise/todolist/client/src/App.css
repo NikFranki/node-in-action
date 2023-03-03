@@ -47,6 +47,16 @@
   width: 35% !important;
 }
 
+.export-and-import-todos-wrapper {
+  position: absolute;
+  right: 80px;
+  top: 150px;
+}
+
+.export-and-import-todos-wrapper .export-btn {
+  margin-right: 10px;
+}
+
 .ant-list-item-content .date {
   position: absolute;
   right: 200px;

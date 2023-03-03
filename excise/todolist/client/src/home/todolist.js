@@ -1,12 +1,14 @@
 import React from 'react';
 
-import { Input, Button, Radio, Divider, List, Skeleton, message } from 'antd';
+import { Input, Button, Radio, Divider, List, Skeleton, Upload, message } from 'antd';
+import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import request from '../utils/request';
 import useContextInfo from '../hooks/use-context-info';
 import Edit from './edit-form-modal';
 import { DEFAULT_PAGESIZE } from '../constant';
+import downloadFile from '../utils/download-file';
 
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
@@ -83,6 +85,17 @@ const Todolist = () => {
     setMode('add');
   };
 
+  const onExport = async () => {
+    const res = await fetch(
+      'http://localhost:8000/export',
+      {
+        method: 'get',
+        credentials: 'include',
+      }
+    ).then(res => res.blob());
+    downloadFile(res);
+  };
+
   const onEdit = async (item) => {
     setMode('edit');
     const res = await getTodoById(item.id);
@@ -125,6 +138,41 @@ const Todolist = () => {
     return (
       <div className="add-item-wrapper">
         <span className="prompt">Try it. </span><Button type="primary" onClick={onAdd}>Add todo</Button>
+      </div>
+    );
+  };
+
+  const renderExportAndImport = () => {
+    const props = {
+      name: 'file',
+      // action: 'http://localhost:8000/import',
+      showUploadList: false,
+      maxCount: 1,
+      accept: '.xlsx',
+      withCredentials: true,
+      beforeUpload: async (file) => {
+        if (file) {
+          const formData = new FormData();
+          formData.append('todos', file);
+          await request(
+            'http://localhost:8000/import',
+            formData,
+            'post',
+            {}
+          );
+          message.success(`${file.name} file uploaded successfully`);
+          getList();
+        }
+        return false;
+      },
+    };
+
+    return (
+      <div className="export-and-import-todos-wrapper">
+        <Button className="export-btn" icon={<DownloadOutlined />} onClick={onExport}>Export todos</Button>
+        <Upload {...props}>
+          <Button icon={<UploadOutlined />}>Import todos</Button>
+        </Upload>
       </div>
     );
   };
@@ -209,6 +257,7 @@ const Todolist = () => {
     <div className="todolist-wrapper">
       {renderSearch()}
       {renderAddItem()}
+      {renderExportAndImport()}
       {renderList()}
       {renderFilter()}
       <Edit

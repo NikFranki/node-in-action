@@ -20,6 +20,7 @@ const app = express();
 
 app.set('serverPath', 'http://localhost:8000/images/');
 app.set('imagesPath', path.join(__dirname, '/public/images/'));
+app.set('xlsxsPath', path.join(__dirname, '/storage/inputs/xlsxs/'));
 
 app.use(session({
   secret: "keyboard cat",
@@ -41,7 +42,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001',],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080', 'http://franki.sevenyuan.cn'],
   credentials: true,
 }));
 

@@ -174,7 +174,7 @@ router.get('/', function(req, res, next) {
 /**
  * 第三个版本-把数据存放到 mysql
  */
-const Entry = require('../lib/entry');
+const { Entry, upload } = require('../lib/entry');
 
 const entry = new Entry({});
 
@@ -199,5 +199,12 @@ router.post('/delete', entry.deleteTodo);
 
 /* post 更新一项 */
 router.post('/update', entry.updateTodo);
+
+/* post 导出文件 */
+router.get('/export', entry.exportFile);
+
+/* post 导入文件 */
+// router.post('/import', entry.importFile);
+router.post('/import', upload.single("todos"), entry.importFile);
 
 module.exports = router;

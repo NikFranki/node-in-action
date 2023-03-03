@@ -1,10 +1,32 @@
 const uuid = require("uuid");
 const dayjs = require('dayjs');
+const XLSX = require("xlsx");
+const path = require('path');
+const multer = require('multer');
 const conn = require('../services/db');
 
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
 // const FILTER_DONE = 3;
+
+const storage = multer.diskStorage({
+  // 确定上传文件存放服务器的物理路径
+  destination: (req, file, callback) => {
+    // 文件不存在，跳过不存储
+    if (!file.originalname) {
+      return;
+    }
+    callback(null, req.app.get('xlsxsPath'));
+  },
+  filename: (req, file, callback) => {
+    if (!file.originalname) {
+      return;
+    }
+    // 根据上传时间的 unix 时间戳来命名文件名
+    callback(null, file.fieldname + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage });
 
 class Entry {
   constructor(obj) {
@@ -44,7 +66,7 @@ class Entry {
       root_id,
     } = req.body;
     const isGtFILTER_ALL = status > FILTER_ALL;
-    // SELECT todolist.id, content, status, folder_id, folders.name as folder_name, date FROM todolist, folders WHERE todolist.folder_id = folders.id;
+    // SELECT todolist.id, content, status, position_id, folder_id, folders.name as folder_name, date FROM todolist, folders WHERE todolist.folder_id = folders.id;
     const sqlTotal = 'SELECT todolist.id, content, status, position_id, folder_id, folders.name as folder_name, date FROM todolist, folders';
     const idQuery = id ? ' WHERE todolist.id=?' : '';
     const statusQuery = isGtFILTER_ALL ? ` ${idQuery ? 'AND' : 'WHERE'} status=?` : '';
@@ -172,6 +194,78 @@ class Entry {
         });
       });
   }
+
+  async exportFile(req, res, next) {
+    const headings = [['id', 'content', 'status', 'position_id', 'folder_id', 'folder_name', 'date']];
+
+    conn.query(
+      `
+        SELECT todolist.id, content, status, position_id, folder_id, folders.name as folder_name, date 
+        FROM todolist, folders 
+        WHERE todolist.folder_id = folders.id
+      `,
+      [],
+      (err, list) => {
+        if (err) return next(err);
+
+        const todos = list.map((item) => {
+          item.date = dayjs(item.date).format('YYYY-MM-DD');
+          return item;
+        });
+        /** Converts an array of JS objects to a worksheet. */
+        const ws = XLSX.utils.json_to_sheet(todos, {
+          origin: 'A2',
+          skipHeader: true
+        });
+        /** Add an array of arrays of JS data to a worksheet */
+        XLSX.utils.sheet_add_aoa(ws, headings);
+
+        /** Creates a new workbook */
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'todos');
+
+        const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.attachment('todos.xlsx');
+        res.send(buffer);
+
+        // store file in server path
+        // const outputPath = path.resolve(__dirname, '../storage/outputs/xlsxs');
+        // const filepath = `${outputPath}/todos.xlsx`;
+        // XLSX.writeFile(wb, filepath);
+        // res.download(filepath);
+      });
+  }
+
+  async importFile(req, res, next) {
+    if (!req.file?.path) return next(new Error('file not found!'));
+
+    const wb = XLSX.readFile(req.file.path);
+    const sheets = wb.SheetNames;
+
+    if (sheets.length > 0) {
+      const data = XLSX.utils.sheet_to_json(wb.Sheets[sheets[0]]);
+      const values = data
+        .map((row) => ([
+          uuid.v4(),
+          row['content'],
+          row['status'],
+          row['position_id'],
+          row['folder_id'],
+          row['date'],
+        ]));
+      conn.query(
+        'INSERT INTO todolist (`id`, `content`, `status`, `position_id`, `folder_id`, `date`) VALUES ?',
+        [values],
+        (err) => {
+          if (err) return next(err);
+
+          res.send({
+            code: 200,
+            message: 'success',
+          });
+        });
+    }
+  }
 }
 
-module.exports = Entry;
+module.exports = { Entry, upload };
