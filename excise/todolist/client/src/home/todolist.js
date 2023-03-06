@@ -1,14 +1,18 @@
 import React from 'react';
 
-import { Input, Button, Radio, Divider, List, Skeleton, Upload, message } from 'antd';
+import { Input, Button, Radio, Divider, List, Skeleton, Upload, Tooltip, message } from 'antd';
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import _ from 'lodash';
 
 import request from '../utils/request';
 import useContextInfo from '../hooks/use-context-info';
 import Edit from './edit-form-modal';
-import { DEFAULT_PAGESIZE } from '../constant';
 import downloadFile from '../utils/download-file';
+import { DEFAULT_PAGESIZE, DEFAULT_FOLDER_SEQUENCE, DEFAULT_FOLDER_NAME } from '../constant';
+import getTextWidth from '../utils/get-text-width';
+import getPerTextWidth from '../utils/get-per-text-width';
+import getMaxNumberOfText from '../utils/get-max-number-of-text';
 
 const FILTER_ALL = 1;
 const FILTER_TODO = 2;
@@ -23,7 +27,28 @@ const Todolist = () => {
   const [mode, setMode] = React.useState('');
   const [todoDetail, setTodoDetail] = React.useState({});
 
-  const { list, pager, onFetchFolders, onFetchTodolist } = useContextInfo();
+  const bodyWidth = document.body.getBoundingClientRect().width;
+  const ListItemMaxWidth = bodyWidth - 950;
+  const textRate = getPerTextWidth();
+  console.log(textRate);
+
+  const {
+    list,
+    pager,
+    folderParentName,
+    onFetchFolders,
+    onFetchTodolist,
+    onSetFolderParentId,
+    onSetTodoId,
+    onSetFolderParentName,
+  } = useContextInfo();
+
+  React.useEffect(() => {
+    onSetFolderParentName(DEFAULT_FOLDER_NAME);
+    onSetFolderParentId(DEFAULT_FOLDER_SEQUENCE);
+    onSetTodoId(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getTodoById = async (id) => {
     const res = await request(
@@ -53,6 +78,10 @@ const Todolist = () => {
 
   React.useEffect(() => {
     getList();
+
+    window.addEventListener('resize', _.debounce(function() {
+      getList();
+    }, 300), false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -126,6 +155,14 @@ const Todolist = () => {
     });
   };
 
+  const renderPosition = () => {
+    return (
+      <div className="belong-to-wrapper">
+        <h3>{folderParentName}</h3>
+      </div>
+    );
+  };
+
   const renderSearch = () => {
     return (
       <div className="search-wrapper">
@@ -182,7 +219,7 @@ const Todolist = () => {
       <div
         id="scrollableDiv"
         style={{
-          height: 'calc(100vh - 401px)',
+          height: 'calc(100vh - 495px)',
           overflow: 'auto',
           margin: '30px 80px',
           padding: '0 16px',
@@ -211,32 +248,42 @@ const Todolist = () => {
         >
           <List
             dataSource={list}
-            renderItem={(item) => (
-              <List.Item
-                key={item.email}
-                actions={[
-                  <Button type="default" key="list-loadmore-edit" onClick={() => onEdit(item)}>edit</Button>,
-                  <Button type="primary" danger key="list-loadmore-more" onClick={() => handleDelete(item.id)}>delete</Button>
-                ]}
-              >
-                <div className="ant-list-item-content">
-                  <Radio
-                    name="check"
-                    checked={item.status === FILTER_DONE}
-                    onClick={() => {
-                      onSubmit('edit', {
-                        ...item,
-                        status: item.status === FILTER_DONE ? FILTER_TODO : FILTER_DONE,
-                      });
-                    }}
-                  />
-                  <span>{item.content}</span>
-                  <span className="folder">belongs with {item.folder_name}</span>
-                  <span className="author">post by {item.username || 'franki'}</span>
-                  <span className="date">{item.date}</span>
-                </div>
-              </List.Item>
-            )}
+            renderItem={(item) => {
+              const maxNumberOfText = getMaxNumberOfText(ListItemMaxWidth, textRate);
+              return (
+                <List.Item
+                  key={item.email}
+                  actions={[
+                    <Button type="default" key="list-loadmore-edit" onClick={() => onEdit(item)}>edit</Button>,
+                    <Button type="primary" danger key="list-loadmore-more" onClick={() => handleDelete(item.id)}>delete</Button>
+                  ]}
+                >
+                  <div className="ant-list-item-content">
+                    <Radio
+                      name="check"
+                      checked={item.status === FILTER_DONE}
+                      onClick={() => {
+                        onSubmit('edit', {
+                          ...item,
+                          status: item.status === FILTER_DONE ? FILTER_TODO : FILTER_DONE,
+                        });
+                      }}
+                    />
+                    <span className="content">
+                      {
+                        item.content.length > maxNumberOfText
+                          ? <Tooltip className={`text-width-${getTextWidth(item.content)}`} placement="topLeft" title={item.content}>
+                            {item.content.slice(0, maxNumberOfText).concat('...')}
+                          </Tooltip>
+                          : item.content
+                      }
+                    </span>
+                    <span className="author">post by {item.username || 'franki'}</span>
+                    <span className="date">{item.date}</span>
+                  </div>
+                </List.Item>
+              );
+            }}
           />
         </InfiniteScroll>
       </div>
@@ -255,6 +302,7 @@ const Todolist = () => {
 
   return (
     <div className="todolist-wrapper">
+      {renderPosition()}
       {renderSearch()}
       {renderAddItem()}
       {renderExportAndImport()}

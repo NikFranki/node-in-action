@@ -2,14 +2,16 @@ import React from 'react';
 
 import request from '../utils/request';
 import useFolders from '../hooks/use-folders';
-import { DEFAULT_PAGENO, DEFAULT_PAGESIZE } from '../constant';
+import { DEFAULT_PAGENO, DEFAULT_PAGESIZE, DEFAULT_FOLDER_SEQUENCE } from '../constant';
 
 const useGlobalContextDispatch = () => {
   const [userInfo, setUserInfo] = React.useState({});
   const { folders, onFetchFolders } = useFolders();
   const [list, setList] = React.useState([]);
   const [pager, setPager] = React.useState({ pageNo: DEFAULT_PAGENO, pageSize: DEFAULT_PAGESIZE, total: 0 });
-  const [folderRootId, setFolderRootId] = React.useState(1); // 1 mean point to default folder's todolist
+  const [folderParentId, setFolderParentId] = React.useState(DEFAULT_FOLDER_SEQUENCE);
+  const [todoId, setTodoId] = React.useState(undefined);
+  const [folderParentName, setFolderParentName] = React.useState('');
 
   React.useEffect(() => {
     onUserInfoChange();
@@ -26,7 +28,8 @@ const useGlobalContextDispatch = () => {
 
   const onFetchTodolist = async (params) => {
     params = {
-      root_id: folderRootId,
+      id: todoId,
+      parent_id: folderParentId,
       ...params,
       pageNo: DEFAULT_PAGENO,
       pageSize: DEFAULT_PAGESIZE,
@@ -44,8 +47,16 @@ const useGlobalContextDispatch = () => {
     });
   };
 
-  const onSetFolderRootId = (folderRootId) => {
-    setFolderRootId(folderRootId);
+  const onSetFolderParentId = (folderParentId) => {
+    setFolderParentId(folderParentId);
+  };
+
+  const onSetFolderParentName = (parentName) => {
+    setFolderParentName(parentName);
+  };
+
+  const onSetTodoId = (todoId) => {
+    setTodoId(todoId);
   };
 
   const values = {
@@ -53,10 +64,15 @@ const useGlobalContextDispatch = () => {
     folders,
     list,
     pager,
+    folderParentId,
+    todoId,
+    folderParentName,
     onUserInfoChange,
     onFetchFolders,
     onFetchTodolist,
-    onSetFolderRootId,
+    onSetFolderParentId,
+    onSetTodoId,
+    onSetFolderParentName,
   };
 
   return values;

@@ -24,7 +24,7 @@ const generateNestedFolders = (folders, ignoreLeaf = false) => {
   const loop = (data = [], prefix = '') => {
     return data.map((item) => {
       const isLeaf = item.isLeaf;
-      const title = item.name;
+      const title = isLeaf ? (item.name.length > 10 ? `${item.name.slice(0, 10)}...` : item.name) : item.name;
       const id = item.id;
       const newItem = ignoreLeaf
         ? { label: title, value: id }
@@ -37,7 +37,7 @@ const generateNestedFolders = (folders, ignoreLeaf = false) => {
         };
 
       if (item.children) {
-        newItem.children = loop(item.children, `${item.id}`);
+        newItem.children = loop(item.children, `${newItem.key}`);
       }
 
       return newItem;

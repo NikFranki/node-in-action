@@ -63,7 +63,7 @@ class Entry {
       content,
       pageSize,
       pageNo,
-      root_id,
+      parent_id,
     } = req.body;
     const isGtFILTER_ALL = status > FILTER_ALL;
     // SELECT todolist.id, content, status, position_id, folder_id, folders.name as folder_name, date FROM todolist, folders WHERE todolist.folder_id = folders.id;
@@ -111,8 +111,8 @@ class Entry {
             item.position_id = JSON.parse(item.position_id || '[]');
             return item;
           });
-          if (!isNaN(root_id)) {
-            data = data.filter(item => item.position_id.includes(root_id));
+          if (!isNaN(parent_id)) {
+            data = data.filter(item => item.position_id.includes(parent_id));
           }
 
           res.send({

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { PlusCircleOutlined } from '@ant-design/icons';
-import { Tree, Space, Input, Divider, Modal, Form, Cascader, message } from 'antd';
+import { PlusCircleOutlined, InboxOutlined } from '@ant-design/icons';
+import { Tree, Space, Input, Divider, Modal, Form, Cascader, Button, message } from 'antd';
 
 import request from '../utils/request';
 import generateNestedFolders from '../utils/generate-nested-folders';
@@ -19,7 +19,9 @@ const SiderBar = () => {
     folders,
     onFetchFolders,
     onFetchTodolist,
-    onSetFolderRootId,
+    onSetFolderParentId,
+    onSetTodoId,
+    onSetFolderParentName,
   } = useContextInfo();
   const [open, setOpen] = React.useState(false);
   const treeData = generateNestedFolders(folders);
@@ -31,18 +33,28 @@ const SiderBar = () => {
   };
 
   const onSelect = async (keys, infos) => {
-    if (infos.node.isLeaf) {
+    const {
+      isLeaf,
+      id,
+      title,
+    } = infos.node;
+    onSetFolderParentName(title);
+    if (isLeaf) {
+      onSetFolderParentId(undefined);
+      onSetTodoId(id);
       return onFetchTodolist({
-        id: infos.node.id,
-        root_id: undefined,
+        id: id,
+        parent_id: undefined,
       });
     }
     const arr = keys[0].split('-');
-    const root_id = +arr[arr.length - 1];
+    const parent_id = +arr[arr.length - 1];
     onFetchTodolist({
-      root_id,
+      parent_id,
+      id: undefined,
     });
-    onSetFolderRootId(root_id);
+    onSetFolderParentId(parent_id);
+    onSetTodoId(undefined);
   };
 
   const onAddFolder = () => {
@@ -53,6 +65,15 @@ const SiderBar = () => {
     return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
   };
 
+  const onSearchAll = () => {
+    onFetchTodolist({
+      parent_id: undefined,
+      id: undefined,
+    });
+    onSetFolderParentId(undefined);
+    onSetTodoId(undefined);
+  };
+
   return (
     <Space className="sider-bar-wrapper" direction="vertical" size="small" style={{ display: 'flex' }}>
       <Search
@@ -61,7 +82,13 @@ const SiderBar = () => {
         onSearch={onSearch}
       />
       <Divider
-        style={{ margin: '12px 0' }}
+        style={{ margin: '5px 0' }}
+      />
+      <div className="search-site-all">
+        <Button onClick={onSearchAll} type="link" icon={<InboxOutlined className="all-icon" />}>全部</Button>
+      </div>
+      <Divider
+        style={{ margin: '5px 0' }}
       />
       <DirectoryTree
         rootClassName="folder-wrapper"

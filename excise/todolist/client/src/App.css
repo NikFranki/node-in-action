@@ -19,6 +19,16 @@
   overflow: auto;
 }
 
+.todolist-wrapper {
+  position: relative;
+}
+
+.belong-to-wrapper h3 {
+  padding-left: 15px;
+  text-align: left;
+  color: #1b82f1;
+}
+
 .todolist-wrapper h1 {
   height: 60px;
   line-height: 60px;
@@ -50,12 +60,17 @@
 
 .export-and-import-todos-wrapper {
   position: absolute;
-  right: 80px;
-  top: 150px;
+  top: 0;
+  right: 15px;
 }
 
 .export-and-import-todos-wrapper .export-btn {
   margin-right: 10px;
+}
+
+.ant-list-item-content {
+  display: flex;
+  align-items: center;
 }
 
 .ant-list-item-content .date {

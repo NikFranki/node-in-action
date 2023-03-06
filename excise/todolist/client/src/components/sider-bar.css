@@ -4,14 +4,35 @@
 }
 
 .sider-bar-wrapper .ant-space-item:nth-child(3) {
-  height: calc(100vh - 262px);
+  height: 30px;
+  line-height: 30px;
+}
+
+.search-site-all {
+  width: 100%;
+}
+
+.search-site-all button {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  color: #fff;
+}
+
+.search-site-all button .all-icon {
+  font-size: 18px;
+}
+
+.sider-bar-wrapper .ant-space-item:nth-child(5) {
+  height: calc(100vh - 310px);
   max-width: 280px;
   padding: 0 10px;
   overflow: auto;
   padding-bottom: 30px;
 }
 
-.sider-bar-wrapper .ant-space-item:nth-child(4) {
+.sider-bar-wrapper .ant-space-item:nth-child(5) {
   position: relative;
 }
 
@@ -30,7 +51,7 @@
 
 .add-file-list-wrapper {
   position: absolute;
-  bottom: -22px;
+  bottom: 0;
   width: 100%;
   line-height: 30px;
   text-align: center;
